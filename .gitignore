@@ -1,0 +1,16 @@
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.swp
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+
+*.dvi
+*.pdf
+*-converted-to.*
