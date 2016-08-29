@@ -9,6 +9,23 @@
 
 \maketitle
 
+For this summary, I chose Tim Snyder's \emph{Overview and Comparison of Genome Compression Algorithms} from the Fall 2012 senior seminar conference. The paper is a survey of some common methods by which genomic data can be compressed. Snyder approaches the topic sensibly: He begins with an introduction to the problem (large amounts of genomic data being produced quickly) and a description of what genomic data actually looks like, discusses some general purpose compression algorithms, and then moves into more specific algorithms for coding single genomes and larger genetic databases.
+
+The structure of the paper is clear throughout. Sections are split up appropriately and paragraphs  each deal with a single idea. That said, some paragraphs become lengthy and run on, especially when providing examples. This excerpt makes up only about a sixth of the paragraph from which it was taken:
+\begin{quote}
+Then, it stores the differences between the two blocks as a string, $x$, of $1$'s and $0$'s where a $1$ at position $i$ means that they are different at position $i$ and a $0$ at position $i$ means that they are the same at position $i$. Then arithmetic coding is used to store distance for the differences. An example would be if at some index the old block has $A$ and the new block has $G$, the distance from $A$ to $G$ might be $2$. \cite{snyder2012}
+\end{quote}
+
+Snyder generally draws from one paper per algorithm. For example, the section on Heath's Algorithm is based entirely on the paper in which the algorithm is introduced. In addition to papers that describe a particular algorithm, Snyder cites three surveys of compression algorithms, an article promoting cloud computing in genome informatics, and three Wikipedia entries for supporting information.
+
+The only paper that stands out for its age is from 1969 and is used for a supporting comparison (Boulton and Wallace, \emph{The Information Content of a Multistate Distribution}). With the exception of a 1994 article also used for supporting information (Grumbach and Tahi, \emph{A New Challenge for Compression Algorithms: Genetic Sequences}), all other sources were published in 2000 or later. The papers describing the various compression algorithms are peer-reviewed and found either in conference proceedings or journals. Therefore, it seems safe to say that the paper satisfies the expectation that key sources be recent and peer-reviewed.
+
+Snyder incorporates several different methods of explanation throughout the paper. All of the algorithms are described in prose. Some, as discussed earlier, include examples. Snyder also borrows figures from the cited papers to illustrate the database compression algorithms and provides diagrams and pseudocode for the general compression algorithms. Overall, the different presentations complement each other well.
+
+The paper flows nicely despite some occasional awkward phrasing. Tenses and voices are occasionally confused, and attempts to vary sentence flow are sometimes forced. (``I will explain two single genome compression algorithms'' and ``This subsection will explain the Expert Model algorithm'' exist side by side.) Snyder points out obvious flaws in some of the algorithms, but could do a better job of explaining their strengths and weaknesses.
+
+As a whole, the paper was an accessible and (seemingly) complete introduction to the various methods used for genomic compression. Snyder presents the information in a clear and easy-to-follow format with appropriate figures, and that aspect is definitely worth emulating. 
+
 \begin{thebibliography}{9}
 
 \bibitem{snyder2012}
