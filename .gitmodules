@@ -1,0 +1,3 @@
+[submodule "umm-templates"]
+	path = umm-templates
+	url = https://github.com/UMM-CSci/Senior_seminar_templates.git
