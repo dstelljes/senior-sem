@@ -1,0 +1,1 @@
+../umm-templates/Sample_paper/sig-alternate.cls

@@ -1,16 +1,29 @@
-\documentclass[12pt,letterpaper]{article}
-\usepackage[margin=1in]{geometry}
+\documentclass{sig-alternate}
+\usepackage{url}
 
-\author{Dan Stelljes}
-\date{September 15, 2016}
-\title{Annotated Bibliography}
+\author{
+\alignauthor{}
+Dan Stelljes\\
+  \affaddr{Division of Science and Mathematics}\\
+  \affaddr{University of Minnesota, Morris}\\
+  \affaddr{Morris, Minnesota, USA 56267}\\
+  \email{stell124@morris.umn.edu}
+}
+\conferenceinfo{UMM CSci Senior Seminar Conference, December 2016}{Morris, MN}
+\title{Composable Concurrency Abstractions}
+\subtitle{Annotated Bibliography}
 
 \begin{document}
 
 \maketitle
+
+\begin{abstract}
+A wide variety of concurrency models presents challenges in both performance and composability. By identifying common concepts and techniques, a high-level language virtual machine can support a variety of abstractions at a low level, and different models can be used in tandem with each other.
+\end{abstract}
+
 \nocite{*}
 
-\bibliographystyle{annotate}
+\bibliographystyle{abbrv}
 \bibliography{references}
 
 \end{document}
