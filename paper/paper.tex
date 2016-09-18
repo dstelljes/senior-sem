@@ -1,0 +1,83 @@
+\documentclass{sig-alternate}
+\usepackage{biblatex}
+
+\author{
+\alignauthor{}
+Dan Stelljes\\
+  \affaddr{Division of Science and Mathematics}\\
+  \affaddr{University of Minnesota, Morris}\\
+  \affaddr{Morris, Minnesota, USA 56267}\\
+  \email{stell124@morris.umn.edu}
+}
+\conferenceinfo{UMM CSci Senior Seminar Conference, December 2016}{Morris, MN}
+\title{Composable Concurrency Abstractions}
+
+\bibliography{references}
+
+% space is limited:
+\AtEveryBibitem{\clearfield{doi}}
+\AtEveryBibitem{\clearfield{isbn}}
+\AtEveryBibitem{\clearfield{note}}
+\AtEveryBibitem{\clearfield{url}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Varied concurrency models and implementations present challenges in both performance and composability. By identifying common concepts and techniques, a high-level language virtual machine can support a variety of abstractions at a low level, and different models can be used in tandem.
+\end{abstract}
+
+\keywords{concurrency abstraction, concurrency, parallelism, virtual machines}
+
+\section{Introduction}
+
+Concurrency means running multiple tasks in overlapping time periods. It's desirable for a couple of important reasons: complex tasks can be completed faster by splitting them into simple parts that can run concurrently, and high-latency tasks can execute without blocking other tasks.
+
+Concurrent tasks can be controlled in different ways (event loops, software transactional memory, etc.). Someone writing a program might like to mix different control mechanisms to take advantage of particular performance or semantic traits.
+
+\section{Abstraction requirements}
+
+Ziv et al.~\cite{Ziv2015} formalized desired requirements for concurrency abstractions to define a protocol for composition.
+
+\subsection{Serializability}
+
+A history of concurrent operations is serializable if its outcome is the same as the outcome of the operations executed consecutively.
+
+\subsection{Deadlock avoidance}
+
+Progress guarantees avoid deadlock, the state in which two concurrent operations are stuck waiting for the other to finish.
+
+\subsection{Opacity}
+
+A concurrency protocol is opaque if it ensures that each concurrent operation sees a consistent state.
+
+\section{Runtime requirements}
+
+Marr and D'Hondt~\cite{Marr2012} surveyed concurrent programming concepts with the goal of improving support at the virtual machine level. Such support could improve performance and enforce semantic guarantees between languages with a common virtual machine.
+
+\subsection{Managed mutation and execution}
+
+To ensure serializability, any modification of an object's state must be regulated.
+
+\subsection{Ownership}
+
+Mutation and execution must be regulated by some owning entity.
+
+\subsection{Leveled reflection}
+
+Safe language-level reflection and unsafe ``meta-level'' reflection need to be distinguished.
+
+\subsection{Enforcability}
+
+All rules need to be enforceable across all concurrency models.
+
+\section{Conclusions}
+
+\section{Acknowledgments}
+
+\section{References}
+
+\printbibliography[heading=none]
+
+\end{document}

@@ -20,7 +20,7 @@ while true; do
         # we've climbed Everest, run a sub-4 mile, created pizza rolls, and put
         # people on the moon, but this is apparently still necessary:
         pdflatex "$DOCUMENT"
-        bibtex `basename -s .tex "$DOCUMENT"`
+        biber `basename -s .tex "$DOCUMENT"`
         pdflatex "$DOCUMENT"
         pdflatex "$DOCUMENT"
 

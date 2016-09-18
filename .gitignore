@@ -1,5 +1,6 @@
 *.aux
 *.bbl
+*.bcf
 *.blg
 *.lof
 *.log
@@ -12,6 +13,7 @@
 *.fot
 *.cb
 *.cb2
+*.run.xml
 
 *.dvi
 *.pdf
