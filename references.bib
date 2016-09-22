@@ -13,16 +13,6 @@
   note = {Foundational material: Early examination of modeling concurrent programming in an object-oriented way.},
 }
 
-@book{Kiczales1991,
- author = {Kiczales, Gregor and Rivieres, Jim Des},
- title = {The Art of the Metaobject Protocol},
- year = {1991},
- isbn = {0262111586},
- publisher = {MIT Press},
- address = {Cambridge, MA, USA},
- note = {Background material: Introduces metaobject protocols as an approach to language design.},
-}
-
 @inproceedings{Marr2009,
   author = {Marr, Stefan and Haupt, Michael and D'Hondt, Theo},
   title = {Intermediate Language Design of High-level Language Virtual Machines: Towards Comprehensive Concurrency Support},
@@ -131,25 +121,6 @@
   note = {Useful and peer reviewed: Advocates for domain-specific concurrenct abstractions rather than looking for some ``silver bullet,'' but seeks to find some commonalities that would allow virtual machines to provide some intrinsic support. Conducts a thorough survey of parallel/concurrent constructs and finds that concurrency constructs (moreso than parallel constructs) benefit from VM support. Suggests a meta-object protocol that can support a variety of abstractions.},
 }
 
-@inproceedings{Golan-Gueta2013,
- author = {Golan-Gueta, Guy and Ramalingam, G. and Sagiv, Mooly and Yahav, Eran},
- title = {Concurrent Libraries with Foresight},
- booktitle = {Proceedings of the 34th ACM SIGPLAN Conference on Programming Language Design and Implementation},
- series = {PLDI '13},
- year = {2013},
- isbn = {978-1-4503-2014-6},
- location = {Seattle, Washington, USA},
- pages = {263--274},
- numpages = {12},
- url = {http://doi.acm.org/10.1145/2491956.2462172},
- doi = {10.1145/2491956.2462172},
- acmid = {2462172},
- publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {automatic synchronization, composition, concurrency, data structures, transactions},
- note = {Useful and peer reviewed: Addresses problems of extending concurrency libraries to perform sequences of operations. Suggests providing a library with ``foresight'' that could ensure atomicity for composite operations. Demonstrates how to infer such foresight automatically. Applies the concept to a Java Map and experimentally evaluates the results. Discusses some useful related work, especially in taking advantage of the semantic properties of concurrent operations (for instance, that read-only operations are commutative).},
-}
-
 @inproceedings{Swalens2014,
   author = {Swalens, Janwillem and Marr, Stefan and De Koster, Joeri and Van Cutsem, Tom},
   title = {Towards Composable Concurrency Abstractions},
@@ -164,25 +135,6 @@
   doi = {10.4204/EPTCS.155.8},
   publisher = {EPTCS 155},
   note = {Useful and peer-reviewed: In-depth look at different concurrency models in Clojure and solid explanation of concepts.}
-}
-
-@inproceedings{Marr2015,
- author = {Marr, Stefan and Seaton, Chris and Ducasse, St{\'e}phane},
- title = {Zero-overhead Metaprogramming: Reflection and Metaobject Protocols Fast and Without Compromises},
- booktitle = {Proceedings of the 36th ACM SIGPLAN Conference on Programming Language Design and Implementation},
- series = {PLDI '15},
- year = {2015},
- isbn = {978-1-4503-3468-6},
- location = {Portland, OR, USA},
- pages = {545--554},
- numpages = {10},
- url = {http://doi.acm.org/10.1145/2737924.2737963},
- doi = {10.1145/2737924.2737963},
- acmid = {2737963},
- publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {Just-in-Time Compilation, Meta-tracing, Metaobject Protocols, Metaprogramming, Partial Evaluation, Proxies, Reflection, Virtual Machines},
- note = {Heavier explanation of metaprogramming concepts; peer reviewed: Primarily demonstrates that it's possible to remove runtime overhead from metaprogramming. Helpfully explains metaobject protocols (facilities to change a language's behavior) and metaprogramming as of 2015 (reflection, performance considerations, self-optimizing interpreters). Presents dispatch chains as a solution to metaprogramming overhead and demonstrates improvements in actual languages. Provides a substantial amount of related work.},
 }
 
 @inproceedings{Ziv2015,
