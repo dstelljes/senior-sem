@@ -1,5 +1,6 @@
 \documentclass{sig-alternate}
 \usepackage{biblatex}
+\usepackage{listings}
 
 \newcommand{\code}[1]{\texttt{#1}}
 
@@ -32,25 +33,11 @@ The need to manage concurrent operations in applications has led to the developm
 
 \end{abstract}
 
-\section*{Key points}
-
-The goal of this research is to discover and explain common properties of concurrency models and demonstrate possible conflicts between them, ultimately showing how they can work together. The research is scoped to concurrency management---while some of the findings may apply to parallel programming, the source material primarily deals with language-level constructs.
-
-Swalens et al.~\cite{Swalens2014} specifically examine the composability of various concurrency models in Clojure. They provide a significant amount of accessible background material, but stop short of actually defining any composable language-level abstractions; the paper serves largely as a foundation for future work. Marr (an author on that paper) and D'Hondt~\cite{Marr2012} discuss unifying concurrency abstractions with the goal of increasing virtual machine-level support for various high-level concurrency models. They propose an ownership-based meta-object protocol as a solution, and demonstrate the implementation of some common concurrency models. Ziv et al.~\cite{Ziv2015} provide formal definitions of requirements for concurrency control (deadlock safety, serializability, etc.) in order to prove composability. The paper was written with databases in mind and is (perhaps obviously) quite heavy on theory, but it provides precise definitions for several important concepts.
-
-All of the mentioned sources deal specifically with composability, though approaches are different. Swalens et al.~\cite{Swalens2014} work at the language level with a focus on the programmer; Marr and D'Hondt~\cite{Marr2012} work at the virtual machine level with a focus on performant abstractions that can accommodate models from various higher-level languages. Taken together, those papers provide a decent foundation for examining different concurrency models. Ziv et al.~\cite{Ziv2015} attack the problem from a purely theoretical perspective which, although helpful, doesn't relate particularly well to the more practical approaches.
-
-Swalens et al.~\cite{Swalens2014} demonstrate issues in the context of Clojure's concurrency models, providing code where appropriate. Those and similar examples could be quite useful in illustrating composability challenges. Marr and D'Hondt~\cite{Marr2012} implement Clojure's agents in Smalltalk and compare that implementation and an implementation of a software transactional memory system (LRSTM) to the proposed meta-object protocol. The comparison's benchmark results demonstrate that VM support is necessary to reduce performance of the MOP to an acceptable level, but are not especially relevant outside of that context. As far as the general state of the research, it seems that a variety of unifying mechanisms have been proposed but languages generally just work around possible issues (for instance, Clojure doesn't send a message to an agent inside a \code{dosync} block until the transaction is committed).
-
-It seems reasonable to assume that the audience already has an intuitive understanding of different types of concurrent operations (disk reads, file downloads, etc.). However, concurrent programming concepts (atomicity, deadlock, etc.) may have to be explained.
-
 \section{Introduction}
 
 Explanation of why concurrency is desirable (and usually necessary in practice). Example of an application that relies heavily on concurrency (web browser, for instance).
 
 \section{Background}
-
-Formal definitions from Ziv et.\ al~\cite{Ziv2015} are likely to be useful (serializability and visibility are treated particularly thoroughly). Marr and D'Hondt~\cite{Marr2012}, approaching the topic from a semantic enforcement angle, discuss atomicity in terms of managed mutation and execution. Other supplementary resources to fill out basic concurrency concepts would be helpful.
 
 \subsection{Concurrency}
 
@@ -70,27 +57,83 @@ Explanation of thread opacity and communication.
 
 \section{Common concurrency models}
 
-Swalens et al.~\cite{Swalens2014} provide some good explanations of the following, but they may be too closely coupled to Clojure. Other sources may be useful for fleshing out definitions or exploring other models.
+\subsection{Atomic variables}
 
-\subsection{Atomics}
+Atomic variables can only be read and mutated by operations that guarantee atomicity. For example, the \emph{compare-and-swap} operation compares the current value of the variable to a given value and only performs a write if the values match:
 
-Definition of atomics and atomic operations (compare-and-swap, fetch-and-increment, locking).
+\begin{lstlisting}[language=C]
+  bool swap(int* v, int old, int new) {
+    if (*v != old) {
+      return false;
+    }
 
-\subsection{Communicating threads}
+    *v = new;
+    return true;
+  }
+\end{lstlisting}
 
-Description of concurrency models that use message passing for thread communication rather than shared memory (actors, agents).
+\emph{compare-and-swap} ensures that a new value cannot be based on outdated information. Suppose that a thread \emph{A} reads a variable \emph{v} and begins computing a new value. At the same time, another thread \emph{B} modifies \emph{v}. When \emph{A} tries to set the value of \emph{v} via \emph{compare-and-swap}, the write will fail. As a result, race conditions are prevented and all writes on \emph{v} are guaranteed to be atomic.
 
-\subsection{Futures}
-
-Explanation of futures (and deferreds and promises) as proxies for some unknown result.
+Languages provide varying levels of support for atomic variables. Go has no atomic variables, but implements some low-level atomic operations (including \emph{compare-and-swap}). Java offers atomic analogues to its primitive wrapper classes (e.g., \code{AtomicInteger} as an atomic \code{Integer}) that ensure thread safety and allow implementations to take advantage of hardware-specific atomic instructions. Clojure provides \code{atom} as a reference type; the value of an \code{atom} can be read with \code{deref} and written with \code{swap!}.
 
 \subsection{Software transactional memory}
 
-Definition of software transactional memory as a model that allows concurrent tasks to write to shared memory.
+Software transactional memory (STM) allows multiple concurrent operations to transactionally write to a shared location in memory. STM is an example of optimistic concurrency control: Each operation writes to the shared memory with no regard to the activity of other threads. After the entire transaction is completed, the transaction manager verifies that other threads have not also made changes to the shared memory. If there are conflicting changes, the transaction is aborted and re-executed until it eventually succeeds.~\cite{Shavit1995}
 
-\section{Composability criteria}
+Conceptually, STM simplifies concurrency because it allows transactions to be thought of as a single-threaded operation. A thread cannot observe changes made to other threads while a transaction is in progress, nor can other threads observe modifications by that thread until the transaction is completed. Only when a transaction completes successfully will changes will become visible to other threads.
 
-Ziv et al.~\cite{Ziv2015} provide specific formal defininitions for composability correctness (``safety'' is described more specifically in terms of abortable and abort-free serializability and ``liveness'' is referred to as deadlock avoidance). Other sources seem to prefer the safety and liveness generalizations.
+Harris and Fraser proposed the use of critical regions to represent transactions:~\cite{Harris2014}
+
+\begin{lstlisting}
+  atomic (index > 0) {
+    index--;
+    return buffer[index];
+  }
+\end{lstlisting}
+
+In this (somewhat contrived) example, everything in the \code{atomic} block is executed as a transaction. The optional guard condition \code{index > 0} prevents a transaction from occurring if it would fail or is unnecessary. No popular languages currently support this type of representation; most often, STM is implemented by a library. The Concurrent Ruby library, for example, models transactions with \code{TVar} and \code{Concurrent::atomically}:~\cite{ConcurrentRubyTVar}
+
+\begin{lstlisting}
+  v = TVar.new(50)
+
+  Concurrent::atomically do
+    v.value += 50
+  end
+\end{lstlisting}
+
+\subsection{Communicating threads}
+
+Instead of sharing memory, some concurrency models restrict operations to private memory. Threads communicate strictly by message passing, which avoids race conditions. Communicating sequential processes (CSP), one of the oldest communicating thread models, describes systems in terms of independent processes that communicate through predefined channels.~\cite{Hoare1978} Other models, most notably the actor model, rely on asynchronous message passing to specific entities.~\cite{Agha1986}
+
+Clojure is useful as a demonstration of communicating threads in that it provides several different models.~\cite{Swalens2014} CSP is implemented by the core.async library. \code{chan} opens a new channel and \code{go} creates a new thread. Inside a \code{go} block, values can be added to and removed from a channel; subsequent operations will block until another thread performs a complementary operation.
+
+Clojure's agents, by contrast, are asynchronous---there are no blocking receive operations. An agent represents the state of an individual entity and only allows changes to occur as the result of an action. Actions are applied to the state of an agent and return the new state of the agent.
+
+The actor model is not implemented by Clojure, though it is commonly used in distributed systems. (The ``pure'' use of actors assumes that everything is an actor.) Actors can only communicate via asynchronous message passing. Upon receiving a message, an actor can choose to send messages to other actors, create new actors, and determine the behavior used for the next received message.
+
+\subsection{Proxies}
+
+Proxies are placeholders for values that are the result of some concurrently executed operation. Futures and promises are the two main types of proxy, though the terms are frequently used interchangably (along with ``delayed'' and ``deferred''). Specifically, futures are resolved to the result of the completed operation. The result is then accessed implicitly; any use of the future will return its value. Promises can be created independently and require the result to be accessed explicitly.
+
+JavaScript relies heavily on promises to model concurrency without descending into ``callback hell.'' Rather than deeply nesting callback functions, asynchronous actions can be expressed as promises:
+
+\begin{lstlisting}
+  var read = new Promise((resolve) => {
+    fs.readdir('.', resolve);
+  });
+
+  var count = (files) => {
+    return new Promise((resolve) {
+      resolve(files.length);
+    });
+  };
+
+  var print = console.log;
+
+  read.then(count).then(print);
+\end{lstlisting}
+
+\section{Correctness criteria}
 
 \subsection{Safety}
 
@@ -100,17 +143,15 @@ Definition of safety as a guarantee of partial correctness (``nothing bad will h
 
 Definition of liveness as a guarantee of progress and eventual termination (``something good will eventually happen'').
 
-\section{Proposed solutions}
+\section{Composability challenges}
 
-Sources tend to survey a particular space and evaluate solutions within it. This section may require more sources or a narrower scope.
+Atomics: Operations affecting multiple atomics may cause race conditions. ABA problem.
 
-\subsection{Language-specific assistance}
+STM: No irrevocable operations can be performed.
 
-Languages can attempt to prevent common errors. (This maybe isn't as muh a solution as a workaround---Clojure, for instance, will handle some potentially unsafe combinations correctly.)
+Communicating threads: CSP relies on blocking for communication, and deadlocks are almost inevitable when combined with other models.
 
-\subsection{Low-level abstractions}
-
-Lower-level concurrency protocols can serve as the basis of implementation for some models, simplifying composition.
+Proxies: Reading future/promise values before they're actually available can cause deadlocks. Also, mutually recursive futures.
 
 \section{Conclusions}
 
