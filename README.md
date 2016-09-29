@@ -3,6 +3,7 @@
 | 2016-09-01 | [Previous paper analysis][analysis]      | [source][analysis-source], [PDF][analysis-final]               |
 | 2016-09-15 | [Annotated bibliography][bibliography]   | [source][bibliography-source], [PDF][bibliography-final]       |
 | 2016-09-22 | [Key points and outline][outline]        | [source][outline-source], [PDF][outline-final]                 |
+| 2016-09-29 | [Section draft][section-draft]           | [source][section-draft-source], [PDF][section-draft-final]     |
 
 [analysis]: https://github.com/dstelljes/senior-sem/tree/master/previous-paper-analysis
 [analysis-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSSUs5dXY4WmUzdVk/view?usp=sharing
@@ -13,3 +14,6 @@
 [outline]: https://github.com/dstelljes/senior-sem/tree/master/paper
 [outline-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSbTFabzFxOXpFRzQ/view?usp=sharing
 [outline-source]: https://github.com/dstelljes/senior-sem/blob/c8b8ae07dbf43ceb0580b28b794efe9e03e8b04e/paper/paper.tex
+[section-draft]: https://github.com/dstelljes/senior-sem/tree/master/paper
+[section-draft-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSekpSZGMyVzBUUzg/view?usp=sharing
+[section-draft-source]: https://github.com/dstelljes/senior-sem/blob/20a8a565899b2d12ed9f8fdb085615cc0867fb2b/paper/paper.tex
