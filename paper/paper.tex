@@ -16,6 +16,7 @@ Dan Stelljes\\
 
 \bibliography{references}
 
+\AtEveryBibitem{\clearfield{doi}}
 \AtEveryBibitem{\clearfield{note}}
 
 \begin{document}
@@ -24,13 +25,19 @@ Dan Stelljes\\
 
 \begin{abstract}
 
-The need to manage concurrent operations in applications has led to the development of a wide variety of concurrency models. Modern programming languages each provide several concurrency models to serve different requirements, and programmers benefit from being able to use them in tandem. We discuss challenges surrounding concurrency control and examine situations in which conflicts between models can occur.
+The need to manage concurrent operations in applications has led to the development of a variety of concurrency models. Modern programming languages generally provide several concurrency models to serve different requirements, and programmers benefit from being able to use them in tandem. We discuss challenges surrounding concurrency control and examine situations in which conflicts between models can occur. Additionally, we describe attempts to implement concurrency models on top of lower-level concurrency abstractions.
 
 \end{abstract}
 
+\keywords{concurrency, parallelism, concurrency abstraction}
+
 \section{Introduction}
 
-Explanation of why concurrency is desirable (and usually necessary in practice). Example of an application that relies heavily on concurrency (web browser, for instance).
+Most interactive computer programs depend on concurrency, the ability to perform different tasks at the same time. A web browser, for instance, might at any point be rendering documents in multiple tabs, transferring files, and handling user interaction. On a lower level, the operating system might be running several other applications, juggling background processes, and responding to events.~\cite{Swalens2014} If every long-running task blocked other tasks from proceeding, the system would be effectively unusable.
+
+Concurrency models enable programmers to reason about and describe interactions between concurrent tasks. The web browser is a good example of several different models: The user interface layer might rely on an event loop, the rendering process might take place in shared memory, and suggestions from browsing history or a search engine might require parallel collection operations or map-reduce to achieve acceptable performance.~\cite{Marr2012}
+
+Given that an application is likely to make use of more than one concurrency model, programmers would prefer that different models could be combined. Such composability is also desirable from an engineering standpoint---a virtual machine for one or more high-level languages should be able to support a variety of models without sacrificing semantics or performance. However, different concurrency models are not necessarily composable and unexpected issues may arise when they interact. Recent work has attempted to identify unifying concurrency abstractions that would guarantee composability of different models and provide underlying virtual machine support.~\cite{Marr2009, Marr2012, Swalens2014, Ziv2015}
 
 \section{Background}
 
@@ -54,11 +61,9 @@ Explanation of thread opacity and communication.
 
 \subsection{Atomic variables}
 
-Atomic variables can only be read and mutated by operations that guarantee atomicity. For example, the \emph{compare-and-swap} operation compares the current value of the variable to a given value and only performs a write if the values match:
+Atomic variables can only be read and mutated by operations that guarantee atomicity. For example, the \emph{compare-and-swap} operation compares the current value of the variable to a given value and only performs a write if the values match.
 
 \emph{compare-and-swap} ensures that a new value cannot be based on outdated information. Suppose that a thread \emph{A} reads a variable \emph{v} and begins computing a new value. At the same time, another thread \emph{B} modifies \emph{v}. When \emph{A} tries to set the value of \emph{v} via \emph{compare-and-swap}, the write will fail. As a result, race conditions are prevented and all writes on \emph{v} are guaranteed to be atomic.
-
-Languages provide varying levels of support for atomic variables. Go has no atomic variables, but implements some low-level atomic operations (including \emph{compare-and-swap}). Java offers atomic analogues to its primitive wrapper classes (e.g., \code{AtomicInteger} as an atomic \code{Integer}) that ensure thread safety and allow implementations to take advantage of hardware-specific atomic instructions. Clojure provides \code{atom} as a reference type; the value of an \code{atom} can be read with \code{deref} and written with \code{swap!}.
 
 \subsection{Software transactional memory}
 
@@ -66,25 +71,17 @@ Software transactional memory (STM) allows multiple concurrent operations to tra
 
 Conceptually, STM simplifies concurrency because it allows transactions to be thought of as a single-threaded operation. A thread cannot observe changes made to other threads while a transaction is in progress, nor can other threads observe modifications by that thread until the transaction is completed. Only when a transaction completes successfully will changes will become visible to other threads.
 
-Harris and Fraser proposed the use of critical regions to represent transactions:~\cite{Harris2014}
-
-In this (somewhat contrived) example, everything in the \code{atomic} block is executed as a transaction. The optional guard condition \code{index > 0} prevents a transaction from occurring if it would fail or is unnecessary. No popular languages currently support this type of representation; most often, STM is implemented by a library. The Concurrent Ruby library, for example, models transactions with \code{TVar} and \code{Concurrent::atomically}:~\cite{ConcurrentRubyTVar}
+Harris and Fraser proposed the use of critical regions to represent transactions.~\cite{Harris2014}
 
 \subsection{Communicating threads}
 
-Instead of sharing memory, some concurrency models restrict operations to private memory. Threads communicate strictly by message passing, which avoids race conditions. Communicating sequential processes (CSP), one of the oldest communicating thread models, describes systems in terms of independent processes that communicate through predefined channels.~\cite{Hoare1978} Other models, most notably the actor model, rely on asynchronous message passing to specific entities.~\cite{Agha1986}
+Instead of sharing memory, some concurrency models restrict operations to private memory. Threads communicate strictly by message passing, which avoids race conditions. Communicating sequential processes (CSP), one of the oldest communicating thread models, describes systems in terms of independent processes that communicate through predefined channels.~\cite{Hoare1978}
 
-Clojure is useful as a demonstration of communicating threads in that it provides several different models.~\cite{Swalens2014} CSP is implemented by the core.async library. \code{chan} opens a new channel and \code{go} creates a new thread. Inside a \code{go} block, values can be added to and removed from a channel; subsequent operations will block until another thread performs a complementary operation.
-
-Clojure's agents, by contrast, are asynchronous---there are no blocking receive operations. An agent represents the state of an individual entity and only allows changes to occur as the result of an action. Actions are applied to the state of an agent and return the new state of the agent.
-
-The actor model is not implemented by Clojure, though it is commonly used in distributed systems. (The ``pure'' use of actors assumes that everything is an actor.) Actors can only communicate via asynchronous message passing. Upon receiving a message, an actor can choose to send messages to other actors, create new actors, and determine the behavior used for the next received message.
+Other models, most notably the actor model, rely on asynchronous message passing to specific entities.~\cite{Agha1986} Actors can only communicate via asynchronous message passing. Upon receiving a message, an actor can choose to send messages to other actors, create new actors, and determine the behavior used for the next received message.
 
 \subsection{Proxies}
 
 Proxies are placeholders for values that are the result of some concurrently executed operation. Futures and promises are the two main types of proxy, though the terms are frequently used interchangably (along with ``delayed'' and ``deferred''). Specifically, futures are resolved to the result of the completed operation. The result is then accessed implicitly; any use of the future will return its value. Promises can be created independently and require the result to be accessed explicitly.
-
-JavaScript relies heavily on promises to model concurrency without descending into ``callback hell.'' Rather than deeply nesting callback functions, asynchronous actions can be expressed as promises:
 
 \section{Correctness criteria}
 
@@ -96,23 +93,17 @@ Definition of safety as a guarantee of partial correctness (``nothing bad will h
 
 Definition of liveness as a guarantee of progress and eventual termination (``something good will eventually happen'').
 
-\section{Composability challenges}
+\section{Proposed abstractions}
 
-Atomics: Operations affecting multiple atomics may cause race conditions. ABA problem.
+More sources here would be good---Marr and D'Hondt~\cite{Marr2012} provide the only solid abstraction.
 
-STM: No irrevocable operations can be performed.
+\subsection{Asynchronous events}
 
-Communicating threads: CSP relies on blocking for communication, and deadlocks are almost inevitable when combined with other models.
+Ziarek et al.~\cite{Ziarek2011} introduce asynchronous events as a possible abstraction. Their examples are heavily tied to Concurrent ML and might be difficult to integrate.
 
-Proxies: Reading future/promise values before they're actually available can cause deadlocks. Also, mutually recursive futures.
+\subsection{Ownership-based meta-object protocol}
 
-\section{Conclusions}
-
-Eloquent restatement of previous material.
-
-\section*{Acknowledgments}
-
-Mom, the Academy, etc.
+Marr and D'Hondt~\cite{Marr2012} proposed an ownership-based meta-object protocol with the goal of providing VM support. They also demonstrate implementation of actors, STM, agents, and CSP.
 
 \printbibliography{}
 
