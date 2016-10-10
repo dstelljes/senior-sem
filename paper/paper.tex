@@ -1,6 +1,5 @@
 \documentclass{sig-alternate}
-\usepackage{biblatex}
-\usepackage{listings}
+\usepackage[backend=bibtex,style=numeric-comp]{biblatex}
 
 \newcommand{\code}[1]{\texttt{#1}}
 
@@ -17,11 +16,7 @@ Dan Stelljes\\
 
 \bibliography{references}
 
-% space is limited:
-\AtEveryBibitem{\clearfield{doi}}
-\AtEveryBibitem{\clearfield{isbn}}
 \AtEveryBibitem{\clearfield{note}}
-\AtEveryBibitem{\clearfield{url}}
 
 \begin{document}
 
@@ -61,17 +56,6 @@ Explanation of thread opacity and communication.
 
 Atomic variables can only be read and mutated by operations that guarantee atomicity. For example, the \emph{compare-and-swap} operation compares the current value of the variable to a given value and only performs a write if the values match:
 
-\begin{lstlisting}[language=C]
-  bool swap(int* v, int old, int new) {
-    if (*v != old) {
-      return false;
-    }
-
-    *v = new;
-    return true;
-  }
-\end{lstlisting}
-
 \emph{compare-and-swap} ensures that a new value cannot be based on outdated information. Suppose that a thread \emph{A} reads a variable \emph{v} and begins computing a new value. At the same time, another thread \emph{B} modifies \emph{v}. When \emph{A} tries to set the value of \emph{v} via \emph{compare-and-swap}, the write will fail. As a result, race conditions are prevented and all writes on \emph{v} are guaranteed to be atomic.
 
 Languages provide varying levels of support for atomic variables. Go has no atomic variables, but implements some low-level atomic operations (including \emph{compare-and-swap}). Java offers atomic analogues to its primitive wrapper classes (e.g., \code{AtomicInteger} as an atomic \code{Integer}) that ensure thread safety and allow implementations to take advantage of hardware-specific atomic instructions. Clojure provides \code{atom} as a reference type; the value of an \code{atom} can be read with \code{deref} and written with \code{swap!}.
@@ -84,22 +68,7 @@ Conceptually, STM simplifies concurrency because it allows transactions to be th
 
 Harris and Fraser proposed the use of critical regions to represent transactions:~\cite{Harris2014}
 
-\begin{lstlisting}
-  atomic (index > 0) {
-    index--;
-    return buffer[index];
-  }
-\end{lstlisting}
-
 In this (somewhat contrived) example, everything in the \code{atomic} block is executed as a transaction. The optional guard condition \code{index > 0} prevents a transaction from occurring if it would fail or is unnecessary. No popular languages currently support this type of representation; most often, STM is implemented by a library. The Concurrent Ruby library, for example, models transactions with \code{TVar} and \code{Concurrent::atomically}:~\cite{ConcurrentRubyTVar}
-
-\begin{lstlisting}
-  v = TVar.new(50)
-
-  Concurrent::atomically do
-    v.value += 50
-  end
-\end{lstlisting}
 
 \subsection{Communicating threads}
 
@@ -116,22 +85,6 @@ The actor model is not implemented by Clojure, though it is commonly used in dis
 Proxies are placeholders for values that are the result of some concurrently executed operation. Futures and promises are the two main types of proxy, though the terms are frequently used interchangably (along with ``delayed'' and ``deferred''). Specifically, futures are resolved to the result of the completed operation. The result is then accessed implicitly; any use of the future will return its value. Promises can be created independently and require the result to be accessed explicitly.
 
 JavaScript relies heavily on promises to model concurrency without descending into ``callback hell.'' Rather than deeply nesting callback functions, asynchronous actions can be expressed as promises:
-
-\begin{lstlisting}
-  var read = new Promise((resolve) => {
-    fs.readdir('.', resolve);
-  });
-
-  var count = (files) => {
-    return new Promise((resolve) {
-      resolve(files.length);
-    });
-  };
-
-  var print = console.log;
-
-  read.then(count).then(print);
-\end{lstlisting}
 
 \section{Correctness criteria}
 
@@ -157,14 +110,10 @@ Proxies: Reading future/promise values before they're actually available can cau
 
 Eloquent restatement of previous material.
 
-\section{Acknowledgments}
+\section*{Acknowledgments}
 
 Mom, the Academy, etc.
 
-\section{References}
-
-\nocite{*}
-
-\printbibliography[heading=none]
+\printbibliography{}
 
 \end{document}
