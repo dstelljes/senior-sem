@@ -33,19 +33,25 @@ The need to manage concurrent operations in applications has led to the developm
 
 \section{Introduction}
 
-Most interactive computer programs depend on concurrency, the ability to perform different tasks at the same time. A web browser, for instance, might at any point be rendering documents in multiple tabs, transferring files, and handling user interaction. On a lower level, the operating system might be running several other applications, juggling background processes, and responding to events.~\cite{Swalens2014} If every long-running task blocked other tasks from proceeding, the system would be effectively unusable.
+Most interactive computer programs depend on concurrency, the ability to perform different tasks at the same time. A web browser, for instance, might at any point be rendering documents in multiple tabs, transferring files, and handling user interaction. On a lower level, the operating system might be running several other applications, juggling background processes, and responding to events.~\cite{Swalens2014} If every long-running process blocked other processes from proceeding, the system would be effectively unusable.
 
-Concurrency models enable programmers to reason about and describe interactions between concurrent tasks. The web browser is a good example of several different models: The user interface layer might rely on an event loop, the rendering process might take place in shared memory, and suggestions from browsing history or a search engine might require parallel collection operations or map-reduce to achieve acceptable performance.~\cite{Marr2012}
+Concurrency models enable programmers to reason about and describe interactions between concurrent processes. The web browser is a good example of several different models: The user interface layer might rely on an event loop, the rendering process might operate in shared memory, and suggestions from browsing history or a search engine might require parallel collection operations or map-reduce to achieve acceptable performance.~\cite{Marr2012}
 
-Given that an application is likely to make use of more than one concurrency model, programmers would prefer that different models could be combined. Such composability is also desirable from an engineering standpoint---a virtual machine for one or more high-level languages should be able to support a variety of models without sacrificing semantics or performance. However, different concurrency models are not necessarily composable and unexpected issues may arise when they interact. Recent work has attempted to identify unifying concurrency abstractions that would guarantee composability of different models and provide underlying virtual machine support.~\cite{Marr2009, Marr2012, Swalens2014, Ziv2015}
+Given that an application is likely to make use of more than one concurrency model, programmers would prefer that different models could be combined. Composability is also desirable from an engineering standpoint---a virtual machine for one or more high-level languages should be able to support a variety of models without sacrificing semantics or performance. However, different concurrency models are not necessarily composable and unexpected issues may arise when they interact. Recent work has attempted to identify unifying concurrency abstractions that would guarantee composability of different models and also provide underlying virtual machine support.~\cite{Marr2009, Marr2012, Swalens2014, Ziv2015}
 
 \section{Background}
 
+Modern operating systems are expected to run many processes concurrently, and processes themselves are often composed of multiple concurrent threads of execution. A processor can only execute one thread at a time, so multitasking is accomplished by rapidly switching between threads.~\cite{Liu1973} Although concurrent threads may appear to be executed simultaneously, truly parallel execution can only take place across multiple processors.
+
+Concurrency models can abstract over implementation details, allowing programmers to reason in terms of asynchronous tasks and independent components instead of low-level thread management. In addition to making a program more understandable, higher-level models afford a degree of flexbility: Concurrent tasks could be run in an event loop on one thread, run in multiple threads on the same processor, or run in parallel on multiple processors.
+
 \subsection{Concurrency}
 
-Brief introduction to threads, processes, and cores. Possible discussion of concurrency primitives (coroutines, fibers, green threads).
+For tasks to be executed concurrently, they must be able to be executed out of order or in partial order. Lamport, in his foundational work on distributed systems, formalized this by defining a ``happens before'' relation (denoted by ``$\rightarrow$'') on a set of tasks: If $A$ and $B$ are tasks in the same process and $A$ occurs before $B$, or if $A$ is the sending of a message by one process and $B$ is the receipt of the same message by another process, then $A \rightarrow B$. Two tasks $A$ and $B$ are said to be concurrent if $A \nrightarrow B$ and $B \nrightarrow A$.~\cite{Lamport1978}
 
-\subsection{Atomicity}
+While the ``happens before'' relation can be used to determine whether tasks can be executed concurrently, it does not imply that the execution will be successful. Tasks that depend on shared resources can lead to resource starvation or deadlock, states in which execution cannot continue because a task cannot secure the needed resources. A common example is the dining philosophers problem: Five silent philosophers, each with a bowl of spaghetti, sit at a round table. A waiter places forks between each pair of adjacent philosophers. A philosopher can only eat when he has both left and right forks, and each fork can only be held by one philosopher.~\cite{Hoare1978} Designing an algorithm such that no philosopher will starve is nonobvious; if each philosopher is instructed to pick up the left fork as soon as it becomes available and then pick up the right fork as soon as it becomes available, each philosopher will pick up the fork to his left and wait (forever) for the fork on his right to become available.
+
+\subsection{Linearizability}
 
 Explanation of individual effects/mutual exclusion.
 
@@ -61,9 +67,7 @@ Explanation of thread opacity and communication.
 
 \subsection{Atomic variables}
 
-Atomic variables can only be read and mutated by operations that guarantee atomicity. For example, the \emph{compare-and-swap} operation compares the current value of the variable to a given value and only performs a write if the values match.
-
-\emph{compare-and-swap} ensures that a new value cannot be based on outdated information. Suppose that a thread \emph{A} reads a variable \emph{v} and begins computing a new value. At the same time, another thread \emph{B} modifies \emph{v}. When \emph{A} tries to set the value of \emph{v} via \emph{compare-and-swap}, the write will fail. As a result, race conditions are prevented and all writes on \emph{v} are guaranteed to be atomic.
+Atomic variables can only be read and mutated by operations that guarantee atomicity. For example, the \emph{compare-and-swap} operation compares the current value of the variable to a given value and only performs a write if the values match. \emph{compare-and-swap} ensures that a new value cannot be based on outdated information. Suppose that a thread $A$ reads a variable $v$ and begins computing a new value. At the same time, another thread $B$ modifies $v$. When $A$ tries to set the value of $v$ via \emph{compare-and-swap}, the write will fail. As a result, all writes on $v$ are guaranteed to be atomic.
 
 \subsection{Software transactional memory}
 
