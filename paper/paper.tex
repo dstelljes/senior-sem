@@ -161,11 +161,13 @@ Higher-level languages (such as Clojure~\cite{Swalens2014}) often provide atomic
 
 \subsection{Software transactional memory}
 
-Software transactional memory (STM) allows multiple concurrent operations to transactionally write to a shared location in memory. STM is an example of optimistic concurrency control: Each operation writes to the shared memory with no regard to the activity of other threads. After the entire transaction is completed, the transaction manager verifies that other threads have not also made changes to the shared memory. If there are conflicting changes, the transaction is aborted and re-executed until it eventually succeeds~\cite{Shavit1995}.
+Software transactional memory (STM) presents an alternative to semaphores and locks by allowing multiple concurrent operations to write to a shared location in memory. STM is an example of optimistic concurrency control: Each thread executes a series of read and write operations (called a transaction) on the shared memory without considering the activity of other threads. On its face, this approach seems disaster-prone---multiple threads writing to the same memory location could easily lead to corrupted data. STM solves this problem by recording all operations in a log. After the entire transaction is completed, the transaction manager verifies that other threads have not also made changes to the shared memory. If there are conflicting changes, the transaction is aborted and retried until it eventually succeeds~\cite{Shavit1995}.
 
-Conceptually, STM simplifies concurrency because it allows transactions to be thought of as a single-threaded operation. A thread cannot observe changes made to other threads while a transaction is in progress, nor can other threads observe modifications by that thread until the transaction is completed. Only when a transaction completes successfully will changes will become visible to other threads.
+Conceptually, STM simplifies concurrency because it allows a transaction to be thought of as a single strictly serializable operation. A thread cannot observe changes made to other threads while a transaction is in progress, nor can other threads observe modifications by that thread until the transaction is completed. Only when a transaction completes successfully will changes will become visible to other threads.
 
-Harris and Fraser proposed the use of critical regions to represent transactions~\cite{Harris2014}.
+STM also offers significant advantages over lock-based programming in terms of composability. Harris et al.\ describe a STM that allows any combination of atomic operations to be composed into a larger atomic operation~\cite{Harris2005}. Generally speaking, executing two operations within a transaction yields a larger atomic operation.
+
+However, the requirement that transactions must be able to be aborted and retried places constraints on the set of allowed operations. Specifically, a transaction cannot execute any operation that cannot be undone. STM can also result in a decrease in performance caused by the overhead of maintaining the log and aborting and retrying transactions.
 
 \subsection{Communicating threads}
 
