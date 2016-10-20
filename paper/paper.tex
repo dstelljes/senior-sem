@@ -50,9 +50,9 @@ Concurrency models can abstract over implementation details, allowing programmer
 
 For operations to be executed concurrently, they must be able to be executed out of order or in partial order. Lamport, in his foundational work on distributed systems, formalized this by defining a ``happens before'' relation (denoted by ``$\rightarrow$'') on a set of operations: If $A$ and $B$ are operations in the same process and $A$ occurs before $B$, or if $A$ is the sending of a message by one process and $B$ is the receipt of the same message by another process, then $A \rightarrow B$. Two operations $A$ and $B$ are said to be concurrent if $A \nrightarrow B$ and $B \nrightarrow A$~\cite{Lamport1978}.
 
-While the ``happens before'' relation can be used to determine whether operations can be executed concurrently, it does not guarantee the correctness of the results. In a non-concurrent (entirely sequential) program, it would be sufficient to show that the program is correct after the execution of each task and therefore correct upon termination.
+While the ``happens before'' relation can be used to determine whether operations can be executed concurrently, it does not guarantee the correctness of the results. In a non-concurrent (entirely sequential) program, it would be sufficient to show that the program is correct after the execution of each operation and therefore correct upon termination. In other words, the program could be proved to be correct by proving that its history (that is, the sequence in which its operations are performed) yields a correct result. Consistency models guarantee the correctness of a program by defining a set of all allowed histories~\cite{Ziv2015}. If an execution of a program follows an allowed history, the execution is consistent. If not, the execution is inconsistent. If every possible execution of the program follows an allowed history, the program conforms to the consistency model.
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \begin{tikzpicture}
     \draw [|-|] (0,0) node[left=3pt] {$ x $} -- (6,0);
@@ -75,7 +75,7 @@ While the ``happens before'' relation can be used to determine whether operation
 
 Figure~\ref{figure:single} illustrates a simple program in which a single thread reads and writes numbers from a variable $x$. (Write operations are denoted by an arrow pointing toward the line and read operations by an arrow pointing away.) The program satisfies an intuitive model of how variables should behave---each time $x$ is read, the value is equal to the value of the most recent write.
 
-\begin{figure}
+\begin{figure}[h]
   \centering
   \begin{tikzpicture}
     \draw [|-|] (0,0) node[left=3pt] {$ x $} -- (6,0);
@@ -105,13 +105,37 @@ Figure~\ref{figure:single} illustrates a simple program in which a single thread
 \label{figure:multiple}
 \end{figure}
 
-In a concurrent program, the history of operations (that is, the sequence in which operations are executed) may not be the same for every execution. As a result, assumptions about correctness that are true for a sequential program may be violated in a concurrent program. This is illustrated in Figure~\ref{figure:multiple}, in which two threads concurrently write from and read to a variable $x$ concurrently. Because the operations of the threads are interleaved, a read operation on $x$ may not yield a value that matches the value of that thread's most recent write. The value may even be inconsistent between consecutive reads. (Errors that arise due to unintentional dependency on execution order are referred to as race conditions.) From the perspective of a single thread, the program appears to be incorrect because it violates the same intuitive model of how variables should behave.
-
-Consistency models guarantee the correctness of a program by defining a set of all allowed histories. If an execution of a program follows an allowed history, the execution is consistent. If not, the execution is inconsistent. If every possible execution of the program follows an allowed history, the program conforms to the consistency model.
+In a concurrent program, the history of operations may not be the same for every execution. As a result, assumptions about correctness that are true for a sequential program may be violated in a concurrent program. This is illustrated in Figure~\ref{figure:multiple}, in which two threads concurrently write from and read to a variable $x$ concurrently. Because the operations of the threads are interleaved, a read operation on $x$ may not yield a value that matches the value of that thread's most recent write. The value may even be inconsistent between consecutive reads. (Errors that arise due to unintentional dependency on execution order are referred to as race conditions.) From the perspective of a single thread, the program appears to be incorrect because it violates the same intuitive model of how variables should behave.
 
 \subsection{Linearizability}
 
-Linearizability (also referred to as atomicity or indivisibility) is a guarantee that the completion of a task will appear to be instantaneous. In other words, a task will take effect atomically at some point during its execution. Any subsequent operation, then, will only see the updated state.
+The examples above assume that all operations complete instantaneously. In real systems, though, operations take time. Even writing to a location in cache memory, an operation measured in nanoseconds, is not truly instantaneous. That an operation may be completed at a time significantly later than the time at which it was invoked introduces uncertainty into a history of operations---the sequence of execution may be influenced by the time it takes for messages to travel.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+    \draw [|-|] (0,0) node[left=3pt] {$ x $} -- (6,0);
+
+    \draw (0.75,0.25) -- (0.5,0.75) node [above left] {$ 1 $};
+    \draw (0.75,0.25) -- (1,0.75);
+
+    \draw (3.75,-0.25) -- (2,-0.75);
+    \draw (3.75,-0.25) -- (5.5,-0.75) node [below right] {$ 2 $};
+
+    \draw (3.25,0.25) -- (3,0.75) node [above left] {$ 2 $};
+    \draw (3.25,0.25) -- (3.5,0.75);
+  \end{tikzpicture}
+  \caption{Two threads concurrently (and noninstantaneously) write to and read from a single variable.}
+\label{figure:time}
+\end{figure}
+
+Consider a third example (Figure~\ref{figure:time}) in which two threads interact with a variable $x$ noninstantanously. (Invocation is denoted by the leftmost point of an event and completion by the rightmost point. The point closest to the line indicates the instant at which the operation takes effect.) The lower thread invokes a read while the value of $x$ is set to $1$. The upper thread invokes and completes a write between the time that the read is invoked and the value is actually read. The read operation then returns $2$ even though $x$ was equal to $1$ at the time it was invoked.
+
+While travel time may introduce ambiguity, there are stil some restrictions on possible sequences of events. Specifically, an operation cannot take effect before its invocation, nor can it take effect after its completion. Therefore, assuming that all threads share some single global state and that operations on that state take place atomically, each operation will appear to take effect atomically at some point after it is invoked and before it is completed.
+
+This consistency model is referred to as linearizability (also referred to as atomicity or indivisibility), and it guarantees that the completion of an operation will appear to the rest of the system to be instantaneous~\cite{Herlihy1990}. In other words, even though linearizable operations are executed concurrently and take time, they appear to happen in a simple linear order.
+
+Linearizability guarantees that the results of an operation will be visible as soon as the operation is complete. This can prevent issues such as stale reads (in which a read operation returns a value different from the most recently written value) and non-monotonic reads (in which a later read operation returns an older value than an earlier read operation). Linearizability is also a composable guarantee: If all operations in a history are linearizable, then the history itself is linearizable~\cite{Herlihy1990}.
 
 \subsection{Serializability}
 
