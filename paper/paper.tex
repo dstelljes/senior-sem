@@ -131,15 +131,19 @@ The examples above assume that all operations complete instantaneously. In real 
 
 Consider a third example (Figure~\ref{figure:time}) in which two threads interact with a variable $x$ noninstantanously. (Invocation is denoted by the leftmost point of an event and completion by the rightmost point. The point closest to the line indicates the instant at which the operation takes effect.) The lower thread invokes a read while the value of $x$ is set to $1$. The upper thread invokes and completes a write between the time that the read is invoked and the value is actually read. The read operation then returns $2$ even though $x$ was equal to $1$ at the time it was invoked.
 
-While travel time may introduce ambiguity, there are stil some restrictions on possible sequences of events. Specifically, an operation cannot take effect before its invocation, nor can it take effect after its completion. Therefore, assuming that all threads share some single global state and that operations on that state take place atomically, each operation will appear to take effect atomically at some point after it is invoked and before it is completed.
+While travel time may introduce ambiguity, there are still some restrictions on possible sequences of events. Specifically, an operation cannot take effect before its invocation, nor can it take effect after its completion. Therefore, assuming that all threads share some single global state and that operations on that state take place atomically, each operation will appear to take effect atomically at some point after it is invoked and before it is completed.
 
-This consistency model is referred to as linearizability (also referred to as atomicity or indivisibility), and it guarantees that the completion of an operation will appear to the rest of the system to be instantaneous~\cite{Herlihy1990}. In other words, even though linearizable operations are executed concurrently and take time, they appear to happen in a simple linear order.
+This consistency model is referred to as linearizability (also referred to as atomicity or indivisibility), and it guarantees that the completion of an operation on a single object will appear to the rest of the system to be instantaneous~\cite{Herlihy1990}. In other words, even though linearizable operations are executed concurrently and take time, they appear to happen in a simple linear order.
 
-Linearizability guarantees that the results of an operation will be visible as soon as the operation is complete. This can prevent issues such as stale reads (in which a read operation returns a value different from the most recently written value) and non-monotonic reads (in which a later read operation returns an older value than an earlier read operation). Linearizability is also a composable guarantee: If all operations in a history are linearizable, then the history itself is linearizable~\cite{Herlihy1990}.
+A useful consequence of linearizability is that the results of an operation must be visible as soon as the operation is complete. This can prevent issues such as stale reads (in which a read operation returns a value different from the most recently written value) and non-monotonic reads (in which a later read operation returns an older value than an earlier read operation).
 
 \subsection{Serializability}
 
-Explanation of execution order as a requirement for correctness.
+A history of operations is said to be serializable if it is equivalent to a serial (i.e., non-interleaved) ordering of its operations~\cite{Herlihy1990}. Serializability is like linearizability in that it demands some linear order of execution. However, serializability describes multiple operations over multiple objects instead of single operations on single objects, and it does not impose any wall-clock time constraints on the history. This means that operations may occur in any order as long as some serial history exists.
+
+Serializability alone is a fairly weak consistency model. Because it does not place bounds on time or order, events may happen out of sequence. However, serializability does guarantee isolation~\cite{Haerder1983}. In order for histories to be serializable, they must not overlap and cannot interfere with each other.
+
+Together, linearizability and serializability guarantee strict serializability, in which a history is equivalent to a serial execution order and that order corresponds to the execution order in real time. Linearizability, then, can actually be described as strict serializability restricted to single operations on single objects~\cite{Herlihy1990}.
 
 \subsection{Visibility}
 
