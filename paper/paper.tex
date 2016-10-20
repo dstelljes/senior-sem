@@ -145,15 +145,19 @@ Serializability alone is a fairly weak consistency model. Because it does not pl
 
 Together, linearizability and serializability guarantee strict serializability, in which a history is equivalent to a serial execution order and that order corresponds to the execution order in real time. Linearizability, then, can actually be described as strict serializability restricted to single operations on single objects~\cite{Herlihy1990}.
 
-\subsection{Visibility}
-
-Explanation of thread opacity and communication.
-
 \section{Common concurrency models}
+
+Modern programming languages generally provide several different concurrency models, each with their own terminology and specific implementation details. It would be impractical to discuss them all, but the most commonly used models can be adequately described by generalization~\cite{Swalens2014}.
 
 \subsection{Atomic variables}
 
-Atomic variables can only be read and mutated by operations that guarantee atomicity. For example, the \emph{compare-and-swap} operation compares the current value of the variable to a given value and only performs a write if the values match. \emph{compare-and-swap} ensures that a new value cannot be based on outdated information. Suppose that a thread $A$ reads a variable $v$ and begins computing a new value. At the same time, another thread $B$ modifies $v$. When $A$ tries to set the value of $v$ via \emph{compare-and-swap}, the write will fail. As a result, all writes on $v$ are guaranteed to be atomic.
+Atomic variables can only be read and mutated by operations that guarantee atomicity. For example, an atomic operation \emph{compare-and-swap} compares the current value of a variable to a given value and only performs a write if the values match~\cite{Swalens2014}. \emph{compare-and-swap} ensures that a new value cannot be written based on outdated information. Suppose that a thread $A$ reads a variable $v$ and begins computing a new value. At the same time, another thread $B$ modifies $v$. When $A$ tries to set the value of $v$ via \emph{compare-and-swap}, the write will fail. As a result, all writes on $v$ are guaranteed to be atomic.
+
+Atomic operations like \emph{compare-and-swap} (and, similarly, \emph{fetch-and-add} and \emph{test-and-set}) are often implemented in hardware and guarantee linearizability at the lowest level possible. As such, atomic variables often serve as the basis for higher-level concurrency control mechanisms such as semaphores and locks, which in turn support the implementation of concurrent data structures. (Linearizability is a composable guarantee~\cite{Herlihy1990}; an operation made up of smaller linearizable operations is itself linearizable.)
+
+A counting semaphore is an atomic variable that serves as a record of how many units of a shared resource are available. By taking advantage of atomic operations, the semaphore can be safely updated and will reliably determine whether a shared resource can be used. A single thread can then test if a resource is available and acquire it before proceeding, thereby preventing race conditions~\cite{Swalens2014}. A lock (also referred to as a mutex) guarantees mutual exclusion, which requires that two threads cannot operate on a shared object at the same time. Locks are commonly implemented by a binary semaphore (that is, a semaphore that simply indicates whether a single resource is available).
+
+Higher-level languages (such as Clojure~\cite{Swalens2014}) often provide atomic references that can be read by an atomic dereferencing operation and written by an atomic swap operation. Such operations may provide convenience features such as automatic retries. In practice, atomics are used to share independent objects that do not demand coordinated updates~\cite{Swalens2014}.
 
 \subsection{Software transactional memory}
 
@@ -194,6 +198,14 @@ Ziarek et al.~\cite{Ziarek2011} introduce asynchronous events as a possible abst
 \subsection{Ownership-based meta-object protocol}
 
 Marr and D'Hondt~\cite{Marr2012} proposed an ownership-based meta-object protocol with the goal of providing VM support. They also demonstrate implementation of actors, STM, agents, and CSP.
+
+\section{Conclusion}
+
+In more words: There's a lot of work on the correctness of concurrent operations. With some care, concurrency models can be composed. There's some work on deeper abstractions, but it's definitely ongoing and more is likely to follow soon.
+
+\section*{Acknowledgments}
+
+Thanks to Elena Machkasova and K.~K. Lamberty for their patience and feedback.
 
 \printbibliography{}
 
