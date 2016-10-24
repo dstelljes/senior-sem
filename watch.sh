@@ -19,10 +19,10 @@ while true; do
     if [[ "$last" != "$current" ]]; then
         # we've climbed Everest, run a sub-4 mile, created pizza rolls, and put
         # people on the moon, but this is apparently still necessary:
-        pdflatex "$DOCUMENT"
+        xelatex "$DOCUMENT"
         bibtex `basename -s .tex "$DOCUMENT"`
-        pdflatex "$DOCUMENT"
-        pdflatex "$DOCUMENT"
+        xelatex "$DOCUMENT"
+        xelatex "$DOCUMENT"
 
         last="$current"
     fi
