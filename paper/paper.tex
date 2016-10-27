@@ -38,7 +38,7 @@ Most interactive computer programs depend on concurrency, the ability to perform
 
 Concurrency models enable programmers to reason about and describe interactions between concurrent processes. The web browser is a good example of several different models: The user interface layer might rely on an event loop, the rendering process might operate in shared memory, and suggestions from browsing history or a search engine might require parallel collection operations or map-reduce to achieve acceptable performance~\cite{Marr2012}.
 
-Given that an application is likely to make use of more than one concurrency model, programmers would prefer that different models could be combined. Composability is also desirable from an engineering standpoint---a virtual machine for one or more high-level languages should be able to support a variety of models without sacrificing semantics or performance. However, different concurrency models are not necessarily composable and unexpected issues may arise when they interact. Recent work has attempted to identify unifying concurrency abstractions that would guarantee composability of different models and also provide underlying virtual machine support~\cite{Marr2009, Marr2012, Swalens2014, Ziv2015}.
+Given that an application is likely to make use of more than one concurrency model, programmers would prefer that different models could be combined. Composability is also desirable from an engineering standpoint---a virtual machine for one or more high-level languages should be able to support a variety of models without resorting to rough low-level approximations. However, different concurrency models are not necessarily composable and unexpected issues may arise when they interact. Recent work has attempted to identify unifying concurrency abstractions that would guarantee composability of different models and also provide underlying virtual machine support~\cite{Marr2009, Marr2012, Swalens2014, Ziv2015}.
 
 \section{Background}
 
@@ -205,7 +205,19 @@ Ziarek et al.~\cite{Ziarek2011} introduce asynchronous events as a possible abst
 
 \subsection{Ownership-based meta-object protocol}
 
-Marr and D'Hondt~\cite{Marr2012} proposed an ownership-based meta-object protocol with the goal of providing VM support. They also demonstrate implementation of actors, STM, agents, and CSP.
+Marr and D'Hondt~\cite{Marr2012} surveyed a variety of concurrent and parallel programming concepts to identify a unifying concurrency abstraction that could be implemented at the virtual machine (VM) level.\footnote{A 2009 survey by Marr, Haupt, and D'Hondt found that virtual machines at the time did not provide intrinsic support for more than one specific model~\cite{Marr2009}.} A unifying abstraction would enable each concurrency model in a high-level language to be represented in machine code without sacrificing performance or semantics. To identify concepts relevant for a multi-language VM, Marr and D'Hondt selected four questions~\cite{Marr2012}:
+
+\begin{enumerate}
+  \item Can the concept be reasonably implemented as a library? (A library implementation may suffer from loss of performance or semantics to an extent that the concept would warrant VM inclusion.)
+
+  \item Does the concept require runtime support to guarantee its semantics? (Semantic guarantees may be enforced by a compiler but not the VM.)
+
+  \item Would runtime support significantly benefit performance? (Deeper knowledge of the concept may enable the VM to better optimize.)
+
+  \item Is the concept already supported by a common VM like the Java Virtual Machine (JVM) or the Common Language Runtime (CLR)?
+\end{enumerate}
+
+From those questions, 26 concepts were identified that would benefit from better low-level support. 
 
 \section{Conclusion}
 
