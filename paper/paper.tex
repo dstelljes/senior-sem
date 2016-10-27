@@ -122,9 +122,9 @@ Modern programming languages generally provide several different concurrency mod
 
 \subsection{Atomic variables}
 
-Atomic variables are used to share independent objects that do not demand coordinated updates but need to be shared by multiple threads~\cite{Swalens2014}. Atomic variables can only be read and mutated by operations that are guaranteed to be linearizable. For example, the atomic operation \emph{compare-and-swap} compares the current value of a variable to a given value and only performs a write if the values match~\cite{Swalens2014}. \emph{compare-and-swap} ensures that a new value cannot be written based on outdated information. Suppose that a thread $A$ reads a variable $x$ and begins computing a new value. At the same time, another thread $B$ modifies $x$. When $A$ tries to set the value of $x$ via \emph{compare-and-swap}, the write will fail. As a result, all writes on $x$ are guaranteed to be linearizable.
+Atomic variables are used to share independent objects that do not demand coordinated updates but need to be shared by multiple threads~\cite{Swalens2014}. Atomic variables can only be read and mutated by operations that are guaranteed to be linearizable. For example, the atomic operation \code{compare-and-swap} compares the current value of a variable to a given value and only performs a write if the values match~\cite{Swalens2014}. \code{compare-and-swap} ensures that a new value cannot be written based on outdated information. Suppose that a thread $A$ reads a variable $x$ and begins computing a new value. At the same time, another thread $B$ modifies $x$. When $A$ tries to set the value of $x$ via \code{compare-and-swap}, the write will fail. As a result, all writes on $x$ are guaranteed to be linearizable.
 
-Atomic operations are often implemented in hardware and guarantee linearizability at the lowest level possible. \emph{fetch-and-add}, another atomic operation, is a common processor instruction that executes multiple hardware-level operations: The value old value is copied from a location in memory into a temporary register, addition is performed on the value in the temorary register, and the new value is stored at the original location.
+Atomic operations are often implemented in hardware and guarantee linearizability at the lowest level possible. \code{fetch-and-add}, another atomic operation, is a common processor instruction that executes multiple hardware-level operations: The value old value is copied from a location in memory into a temporary register, addition is performed on the value in the temorary register, and the new value is stored at the original location.
 
 Atomic variables often serve as the basis for higher-level concurrency control mechanisms such as semaphores and locks, which in turn support the implementation of concurrent data structures. A counting semaphore is an atomic variable that serves as a record of how many units of a shared resource are available. By taking advantage of atomic operations, the semaphore can be safely updated and will reliably determine whether a shared resource can be used. A single thread can then test if a resource is available and acquire it before proceeding, thereby preventing race conditions~\cite{Swalens2014}. A lock (also referred to as a mutex) guarantees mutual exclusion, which requires that two threads cannot operate on a shared object at the same time. Locks are commonly implemented by a binary semaphore (that is, a semaphore that simply indicates whether a single resource is available).
 
@@ -154,7 +154,7 @@ Shared state can also be represented by communicating threads. The agent model, 
 
 Proxies are a general term used to describe placeholders for values that are the result of some concurrently executed operation. Unlike communicating thread models, which rely on message passing between dedicated threads, a proxy executes some function in a new thread and delivers the result upon completion~\cite{Swalens2014}.
 
-Futures and promises are two popular proxy models, though the terms are frequently used interchangeably (along with ``delayed,'' ``deferred,'' and ``eventual''). Generally, futures are resolved to the result of the completed operation. The result is then accessed implicitly; any use of the future will return its value. Promises, on the other hand, are created as independent objects and require the result to be accessed explicitly.
+Futures and promises are two of the most common proxy models, though the terms are frequently used interchangeably (along with ``delayed,'' ``deferred,'' and ``eventual''). Generally, futures are resolved to the result of the completed operation. The result is then accessed implicitly; any use of the future will return its value. Promises, on the other hand, are created as independent objects and require the result to be accessed explicitly.
 
 In practice, proxies are used to execute long-running operations such as rendering or network requests~\cite{Swalens2014} without blocking other operations. Promise objects, which can be easily passed and composed, generally offer more flexibility than constructs such as asynchronous callbacks~\cite{Kambona2013}.
 
@@ -166,19 +166,42 @@ Ziarek et al.~\cite{Ziarek2011} introduce asynchronous events as a possible abst
 
 \subsection{Ownership-based meta-object protocol}
 
-Marr and D'Hondt~\cite{Marr2012} surveyed a variety of concurrent and parallel programming concepts to identify a unifying concurrency abstraction that could be implemented at the virtual machine (VM) level.\footnote{A 2009 survey by Marr, Haupt, and D'Hondt found that virtual machines at the time did not provide intrinsic support for more than one specific model~\cite{Marr2009}.} A unifying abstraction would enable each concurrency model in a high-level language to be represented in machine code without sacrificing performance or semantics. To identify concepts relevant for a multi-language VM, Marr and D'Hondt selected four questions~\cite{Marr2012}:
+Marr and D'Hondt~\cite{Marr2012} surveyed a variety of concurrent and parallel programming concepts to identify a unifying concurrency abstraction that could be implemented at the virtual machine level.\footnote{A 2009 survey by Marr, Haupt, and D'Hondt~\cite{Marr2009} found that virtual machines at the time did not provide intrinsic support for more than one specific model.} A unifying abstraction would enable each concurrency model in a high-level language to be represented in machine code without sacrificing performance or semantics. To identify concepts relevant for a multi-language virtual machine, Marr and D'Hondt selected four questions:
 
 \begin{enumerate}
-  \item Can the concept be reasonably implemented as a library? (A library implementation may suffer from loss of performance or semantics to an extent that the concept would warrant VM inclusion.)
+  \item Can the concept be reasonably implemented as a library? (A library implementation may suffer from loss of performance or semantics to an extent that the concept would warrant virtual machine inclusion.)
 
-  \item Does the concept require runtime support to guarantee its semantics? (Semantic guarantees may be enforced by a compiler but not the VM.)
+  \item Does the concept require runtime support to guarantee its semantics? (Semantic guarantees may be enforced by a compiler but not the virtual machine. For instance, immutable objects in one language may not be immutable in machine code, and therefore may be mutated by another language.)
 
-  \item Would runtime support significantly benefit performance? (Deeper knowledge of the concept may enable the VM to better optimize.)
+  \item Would runtime support benefit performance? (Deeper knowledge of the concept may enable the virtual machine to better optimize. Some concepts, though, may require knowledge of the underlying hardware to realize any performance improvements; such concepts would not necessarily benefit from runtime support.)
 
-  \item Is the concept already supported by a common VM like the Java Virtual Machine (JVM) or the Common Language Runtime (CLR)?
+  \item Is the concept already supported by a common virtual machine like the Java Virtual Machine (JVM) or the Common Language Runtime (CLR)?
 \end{enumerate}
 
-From those questions, 26 concepts were identified that would benefit from better low-level support.
+From those questions, 26 concepts were identified that would benefit from better low-level support. Of those, 18 suffered from loss of semantic guarantees when compiled to machine code. With that in mind, Marr and D'Hondt derived the following requirements for a unifying abstraction:
+
+\begin{itemize}
+  \item Managed mutation: Concurrency models impose restrictions on how state can be modified; therefore, mutation must be able to be flexibly managed.
+
+  \item Managed execution: Similarly, invocation of operations on objects is usually restricted and must be able to be flexibly managed.
+
+  \item Ownership: Some owning entity usually regulates mutation and execution, so ownership should be supported in a way that allows for adaptable mutation and execution rules.
+
+  \item Leveled reflection: Reflection allows a program to examine its own structure and behavior at runtime. To guarantee safety, there needs to be a distinction between language-level reflection (restricted reflection operations supported by the high-level language) and meta-level reflection (unrestricted reflection operations on the low-level abstraction).
+
+  \item Enforceability: All defined restrictions should be enforceable on different concurrency models. Additionally, the semantics of the language in which a model is defined must be enforced regardless of where the model is used.
+\end{itemize}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=224pt]{obmop}
+  \caption{Marr and D'Hondt's object-based meta-object protocol~\cite{Marr2012}.}
+\label{figure:obmop}
+\end{figure}
+
+Given those requirements, Marr and D'Hondt defined an ownership-based meta-object protocol (MOP) that could describe a low-level abstraction, illustrated in Figure~\ref{figure:obmop}. The owner of an object, referred to as the domain, manages operations on all of the objects that it owns (namely, reading and writing of object fields and invocation of methods on objects). This satisfies the ownership requirement. Read and write operations are directed to the \code{readField} and \code{writeField} operations on the domain, satisfying the managed mutation requirement. Similarly, all method invocations are directed to the \code{exec}, satisfying the managed execution requirement. Threads are executed in a domain and specify whether execution occurs at the language level (with restricted reflection) or the meta level (with unrestricted reflection), satisfying the leveled reflection requirement. Globally shared resources are handled by the domain (specifically, the \code{readGlobal} and \code{writeGlobal} methods) if they might break semantics. Additionally, the \code{primitive*} operations allow callers to override the semantics of virtual machine primitives, completing the enforcability requirement.
+
+To demonstrate the suitability of the MOP as a low-level abstraction, Marr and D'Hondt implemented several concurrency models. The MOP was able to support LRSTM (a STM for the Smalltalk language), Clojure's agents (which rely on communicating threads), active objects (a variation on proxies), and several other models. While the MOP was able to successfully enforce the semantics of each model, the resulting performance cost suggested that the MOP must be implemented at the virtual machine level to sufficiently reduce the abstraction overhead. Marr and D'Hondt also note that regarding the owner of an object as the only entity able to restrict interaction is somewhat limiting. For instance, the behavior of the system when different semantics interact needs to be explicitly specified.
 
 \section{Conclusion}
 
