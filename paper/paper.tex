@@ -158,11 +158,39 @@ Futures and promises are two of the most common proxy models, though the terms a
 
 In practice, proxies are used to execute long-running operations such as rendering or network requests~\cite{Swalens2014} without blocking other operations. Promise objects, which can be easily passed and composed, generally offer more flexibility than constructs such as asynchronous callbacks~\cite{Kambona2013}.
 
+\section{Composability challenges}
+
+While concurrency models guarantee their own correctness, issues may arise when different models are used together. For example, an implementation of a STM that guarantees linearizability assumes that all shared resources are managed by the STM~\cite{Shavit1995}. However, if a thread communicates with other threads (in CSP, for instance), that assumption could lead to unexpected interleaving of operations~\cite{Swalens2014}.
+
+Swalens et al.~\cite{Swalens2014}, in a through study of concurrency models provided by Clojure, examined issues that arise when different models are combined. Two models are said to be composable if combining them does not introduce correctness issues.
+
+\subsection{Correctness criteria}
+
+In the study, safety and liveness were used as the two criteria for evaluating the correctness of a combination of models. Together, the two have historically been used to prove the correctness of distributed systems~\cite{Lamport1977}.
+
+Informally, safety guarantees that ``nothing bad will happen.'' In other words, given a correct input, a program will not produce an incorrect result~\cite{Swalens2014}. This property is also referred to as partial correctness. Safety is generally achieved in the management of shared resources. STM, for instance, only allows shared memory to be accessed through transactions; communicating threads only allow data to be shared through message passing.
+
+Liveness guarantees that ``something good will eventaully happen,'' or that a program will eventually terminate if its input is correct. Taken together, safety and liveness are referred to as total correctness---given a correct input, a program will terminate with the correct output~\cite{Swalens2014}. Deadlocks and livelocks are the primary obstacle to liveness and can arise when models are combined.
+
+\subsection{Possible conflicts}
+
+To discover the types of conflicts that might arise when combining different models, the study examined all pairwise combinations of Clojure's models. This process uncovered the following types of conflicts:
+
+\begin{itemize}
+  \item A model reexecutes code containing another concurrency model that performs an irrevocable action. (A STM transaction contains a proxy that performs a network request.)
+
+  \item A model reexecutes code that causes the reexecution to continually happen. (An STM transaction that consistently conflicts with another may cause a livelock, though Swalens et al.~note that Clojure dynamically prevents this type of conflict.)
+
+  \item A model that supports blocking operations is used within a model that does not expect blocking operations. (A deadlock might be caused when a read operation occurs within mutually recursive futures.)
+
+  \item A model does not guarantee safety or liveness by design, making composability impossible. (A model that does not guarantee safety would violate the safety guarantee of an outer model unless such a conflict was explicitly prevented.)
+\end{itemize}
+
 \section{Proposed abstractions}
 
-\subsection{Asynchronous events}
+%\subsection{Asynchronous events}
 
-Ziarek et al.~\cite{Ziarek2011} introduce asynchronous events as a possible abstraction. Their examples are heavily tied to Concurrent ML and might be difficult to integrate.
+% Ziarek et al.~\cite{Ziarek2011} introduce asynchronous events as a possible abstraction. Their examples are heavily tied to Concurrent ML and might be difficult to integrate.
 
 \subsection{Ownership-based meta-object protocol}
 
