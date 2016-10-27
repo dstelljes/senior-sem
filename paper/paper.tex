@@ -1,4 +1,5 @@
 \documentclass{sig-alternate}
+\usepackage[USenglish]{babel}
 \usepackage[backend=bibtex,style=numeric-comp]{biblatex}
 \usepackage{graphicx}
 
@@ -40,7 +41,7 @@ Most interactive computer programs depend on concurrency, the ability to perform
 
 Concurrency models enable programmers to reason about and describe interactions between concurrent processes. The web browser is a good example of several different models: The user interface layer might rely on an event loop, the rendering process might operate in shared memory, and suggestions from browsing history or a search engine might require parallel collection operations to achieve acceptable performance~\cite{Marr2012}.
 
-Given that an application is likely to make use of more than one concurrency model, programmers would prefer that different types of models could be arbitrarily combined. From an engineering standpoint, composable models are also desirable---a virtual machine for one or more high-level languages should be able to support a variety of models without resorting to rough low-level approximations. However, different concurrency models are not necessarily composable and unexpected issues may arise when they interact. Recent work has attempted to identify unifying concurrency abstractions that would guarantee composability of different models and also provide underlying virtual machine support~\cite{Marr2009, Marr2012, Swalens2014, Ziv2015}.
+Given that an application is likely to make use of more than one concurrency model, programmers would prefer that different types of models could be arbitrarily combined. From an engineering standpoint, composable models are also desir\-able---a virtual machine for one or more high-level languages should be able to support a variety of models without resorting to rough low-level approximations. However, different concurrency models are not necessarily composable and unexpected issues may arise when they interact. Recent work has attempted to identify unifying concurrency abstractions that would guarantee composability of different models and also provide underlying virtual machine support~\cite{Marr2009, Marr2012, Swalens2014, Ziv2015}.
 
 \section{Background}
 
@@ -109,7 +110,7 @@ A history of operations is said to be serializable if it is equivalent to a seri
 \label{figure:serializability}
 \end{figure}
 
-Figure~\ref{figure:serializability} illustrates a set of serializable read and write operations. Even though the durations of each event occur out of order and even cross, the events themselves can be arranged serially: $x \leftarrow 1$, $x = 1$, $x \leftarrow 2$, $x = 2$.
+Figure~\ref{figure:serializability} illustrates a set of serializable read and write operations. Even though the exeuctions of each operation occur out of order and even intersect, the events themselves can be arranged serially: $x \leftarrow 1$, $x = 1$, $x \leftarrow 2$, $x = 2$.
 
 Serializability alone is a fairly weak consistency model. Because it does not place bounds on time or order, events may happen out of sequence, and, unlike linearizability, serializability is not a composable guarantee. Serializability is useful, though, as a guarantee of isolation~\cite{Haerder1983}: While a serializable set of operations is being executed, it appears to be the only set of operations being executed. For histories to be serializable, then, they must not overlap and cannot interfere with each other.
 
@@ -121,13 +122,13 @@ Modern programming languages generally provide several different concurrency mod
 
 \subsection{Atomic variables}
 
-Atomic variables can only be read and mutated by operations that guarantee atomicity. For example, an atomic operation \emph{compare-and-swap} compares the current value of a variable to a given value and only performs a write if the values match~\cite{Swalens2014}. \emph{compare-and-swap} ensures that a new value cannot be written based on outdated information. Suppose that a thread $A$ reads a variable $v$ and begins computing a new value. At the same time, another thread $B$ modifies $v$. When $A$ tries to set the value of $v$ via \emph{compare-and-swap}, the write will fail. As a result, all writes on $v$ are guaranteed to be atomic.
+Atomic variables are used to share independent objects that do not demand coordinated updates but need to be shared by multiple threads~\cite{Swalens2014}. Atomic variables can only be read and mutated by operations that are guaranteed to be linearizable. For example, the atomic operation \emph{compare-and-swap} compares the current value of a variable to a given value and only performs a write if the values match~\cite{Swalens2014}. \emph{compare-and-swap} ensures that a new value cannot be written based on outdated information. Suppose that a thread $A$ reads a variable $x$ and begins computing a new value. At the same time, another thread $B$ modifies $x$. When $A$ tries to set the value of $x$ via \emph{compare-and-swap}, the write will fail. As a result, all writes on $x$ are guaranteed to be linearizable.
 
-Atomic operations like \emph{compare-and-swap} (and, similarly, \emph{fetch-and-add} and \emph{test-and-set}) are often implemented in hardware and guarantee linearizability at the lowest level possible. As such, atomic variables often serve as the basis for higher-level concurrency control mechanisms such as semaphores and locks, which in turn support the implementation of concurrent data structures.
+Atomic operations are often implemented in hardware and guarantee linearizability at the lowest level possible. \emph{fetch-and-add}, another atomic operation, is a common processor instruction that executes multiple hardware-level operations: The value old value is copied from a location in memory into a temporary register, addition is performed on the value in the temorary register, and the new value is stored at the original location.
 
-A counting semaphore is an atomic variable that serves as a record of how many units of a shared resource are available. By taking advantage of atomic operations, the semaphore can be safely updated and will reliably determine whether a shared resource can be used. A single thread can then test if a resource is available and acquire it before proceeding, thereby preventing race conditions~\cite{Swalens2014}. A lock (also referred to as a mutex) guarantees mutual exclusion, which requires that two threads cannot operate on a shared object at the same time. Locks are commonly implemented by a binary semaphore (that is, a semaphore that simply indicates whether a single resource is available).
+Atomic variables often serve as the basis for higher-level concurrency control mechanisms such as semaphores and locks, which in turn support the implementation of concurrent data structures. A counting semaphore is an atomic variable that serves as a record of how many units of a shared resource are available. By taking advantage of atomic operations, the semaphore can be safely updated and will reliably determine whether a shared resource can be used. A single thread can then test if a resource is available and acquire it before proceeding, thereby preventing race conditions~\cite{Swalens2014}. A lock (also referred to as a mutex) guarantees mutual exclusion, which requires that two threads cannot operate on a shared object at the same time. Locks are commonly implemented by a binary semaphore (that is, a semaphore that simply indicates whether a single resource is available).
 
-Higher-level languages (such as Clojure~\cite{Swalens2014}) often provide atomic references that can be read by an atomic dereferencing operation and written by an atomic swap operation. Such operations may provide convenience features such as automatic retries. In practice, atomics are used to share independent objects that do not demand coordinated updates~\cite{Swalens2014}.
+Many higher-level languages (such as Clojure~\cite{Swalens2014}) provide atomic references that can be read by an atomic dereferencing operation and written by an atomic swap operation. Such operations may provide convenience features such as automatic retries.
 
 \subsection{Software transactional memory}
 
@@ -135,9 +136,9 @@ Software transactional memory (STM) presents an alternative to semaphores and lo
 
 Conceptually, STM simplifies concurrency because it allows a transaction to be thought of as a single strictly serializable operation. A thread cannot observe changes made to other threads while a transaction is in progress, nor can other threads observe modifications by that thread until the transaction is completed. Only when a transaction completes successfully will changes will become visible to other threads. Practically, STM is useful in any situation in which a shared object needs to be accessed and modified by multiple threads~\cite{Swalens2014}.
 
-STM also offers significant advantages over lock-based programming in terms of composability. Harris et al.\ describe a STM that allows any combination of atomic operations to be composed into a larger atomic operation~\cite{Harris2005}. Generally speaking, executing two operations within a transaction yields a larger atomic operation.
+STM also offers significant advantages over lock-based programming in terms of composability. Given that executing two operations within a transaction yields a larger atomic operation, Harris et al.\ describe a STM that allows any combination of atomic operations to be composed into a larger atomic operation~\cite{Harris2005}.
 
-However, the requirement that transactions must be able to be aborted and retried places constraints on the set of allowed operations. Specifically, a transaction cannot execute any operation that cannot be undone. STM can also result in a decrease in performance caused by the overhead of maintaining the log and aborting and retrying transactions.
+However, the requirement that transactions must be able to be aborted and retried places constraints on the set of allowed operations. Specifically, a transaction cannot execute any operation that cannot be undone or retried, such as writing to disk or performing a network request. STM can also result in a decrease in performance caused by the overhead of maintaining the log and aborting and retrying transactions.
 
 \subsection{Communicating threads}
 
@@ -151,7 +152,11 @@ Shared state can also be represented by communicating threads. The agent model, 
 
 \subsection{Proxies}
 
-Proxies are placeholders for values that are the result of some concurrently executed operation. Futures and promises are the two main types of proxy, though the terms are frequently used interchangeably (along with ``delayed'' and ``deferred''). Specifically, futures are resolved to the result of the completed operation. The result is then accessed implicitly; any use of the future will return its value. Promises can be created independently and require the result to be accessed explicitly.
+Proxies are a general term used to describe placeholders for values that are the result of some concurrently executed operation. Unlike communicating thread models, which rely on message passing between dedicated threads, a proxy executes some function in a new thread and delivers the result upon completion~\cite{Swalens2014}.
+
+Futures and promises are two popular proxy models, though the terms are frequently used interchangeably (along with ``delayed,'' ``deferred,'' and ``eventual''). Generally, futures are resolved to the result of the completed operation. The result is then accessed implicitly; any use of the future will return its value. Promises, on the other hand, are created as independent objects and require the result to be accessed explicitly.
+
+In practice, proxies are used to execute long-running operations such as rendering or network requests~\cite{Swalens2014} without blocking other operations. Promise objects, which can be easily passed and composed, generally offer more flexibility than constructs such as asynchronous callbacks~\cite{Kambona2013}.
 
 \section{Proposed abstractions}
 
