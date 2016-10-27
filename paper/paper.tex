@@ -70,7 +70,7 @@ Figure~\ref{figure:single} illustrates a simple program in which a single thread
 \label{figure:multiple}
 \end{figure}
 
-In a concurrent program, the history of operations may not be the same for every execution. As a result, assumptions about correctness that are true for a sequential program may be violated in a concurrent program. This is illustrated in Figure~\ref{figure:multiple}, in which two threads concurrently write from and read to a variable $x$ concurrently. Because the operations of the threads are interleaved, a read operation on $x$ may not yield a value that matches the value of that thread's most recent write. The value may even be inconsistent between consecutive reads. If a single thread were to incorrectly assume that it had exclusive control of $x$, this behavior would appear incorrect and could lead to race conditions, errors that arise due to unintentional dependency on execution order are referred to as race conditions.
+In a concurrent program, the history of operations may not be the same for every execution. As a result, assumptions about correctness that are true for a sequential program may be violated in a concurrent program. This is illustrated in Figure~\ref{figure:multiple}, in which two threads concurrently write from and read to a variable $x$ concurrently. Because the operations of the threads are interleaved, a read operation on $x$ may not yield a value that matches the value of that thread's most recent write. The value may even be inconsistent between consecutive reads. If a single thread were to incorrectly assume that it had exclusive control of $x$, this behavior would appear incorrect and could lead to race conditions, errors that arise due to unintentional dependency on execution order.
 
 \subsection{Linearizability}
 
@@ -109,11 +109,11 @@ A history of operations is said to be serializable if it is equivalent to a seri
 \label{figure:serializability}
 \end{figure}
 
-Figure~\ref{figure:serializability} illustrates a set of serializable read and write operations. Even though the durations of each event occur out of order and even cross, the events themselves are equivalent to a serial history: $x \leftarrow 1$, $x = 1$, $x \leftarrow 2$, $x = 2$.
+Figure~\ref{figure:serializability} illustrates a set of serializable read and write operations. Even though the durations of each event occur out of order and even cross, the events themselves can be arranged serially: $x \leftarrow 1$, $x = 1$, $x \leftarrow 2$, $x = 2$.
 
-Serializability alone is a fairly weak consistency model. Because it does not place bounds on time or order, events may happen out of sequence. However, serializability does guarantee isolation~\cite{Haerder1983}. In order for histories to be serializable, they must not overlap and cannot interfere with each other.
+Serializability alone is a fairly weak consistency model. Because it does not place bounds on time or order, events may happen out of sequence, and, unlike linearizability, serializability is not a composable guarantee. Serializability is useful, though, as a guarantee of isolation~\cite{Haerder1983}: While a serializable set of operations is being executed, it appears to be the only set of operations being executed. For histories to be serializable, then, they must not overlap and cannot interfere with each other.
 
-Together, linearizability and serializability guarantee strict serializability, in which a history is equivalent to a serial execution order and that order corresponds to the execution order in real time. Linearizability, then, can actually be described as strict serializability restricted to single operations on single objects~\cite{Herlihy1990}.
+Together, linearizability and serializability guarantee strict serializability, in which a history is equivalent to a serial execution order and that serial order corresponds to the execution order in real time. Given that, linearizability can actually be described as strict serializability restricted to single operations on single objects~\cite{Herlihy1990}.
 
 \section{Common concurrency models}
 
@@ -153,21 +153,7 @@ Shared state can also be represented by communicating threads. The agent model, 
 
 Proxies are placeholders for values that are the result of some concurrently executed operation. Futures and promises are the two main types of proxy, though the terms are frequently used interchangeably (along with ``delayed'' and ``deferred''). Specifically, futures are resolved to the result of the completed operation. The result is then accessed implicitly; any use of the future will return its value. Promises can be created independently and require the result to be accessed explicitly.
 
-\section{Correctness criteria}
-
-This section may be unnecessary. There's already a lot of overlapping material in the background section that could be made more comprehensive.
-
-\subsection{Safety}
-
-Definition of safety as a guarantee of partial correctness (``nothing bad will happen'').
-
-\subsection{Liveness}
-
-Definition of liveness as a guarantee of progress and eventual termination (``something good will eventually happen'').
-
 \section{Proposed abstractions}
-
-More sources here would be good---Marr and D'Hondt~\cite{Marr2012} provide the only solid abstraction.
 
 \subsection{Asynchronous events}
 
