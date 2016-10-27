@@ -1,6 +1,8 @@
 \documentclass{sig-alternate}
 \usepackage[backend=bibtex,style=numeric-comp]{biblatex}
-\usepackage{tikz}
+\usepackage{graphicx}
+
+\graphicspath{{../figures/}}
 
 \newcommand{\code}[1]{\texttt{#1}}
 
@@ -36,76 +38,39 @@ The need to manage concurrent operations in applications has led to the developm
 
 Most interactive computer programs depend on concurrency, the ability to perform different tasks at the same time. A web browser, for instance, might at any point be rendering documents in multiple tabs, transferring files, and handling user interaction. On a lower level, the operating system might be running several other applications, juggling background processes, and responding to events~\cite{Swalens2014}. If every long-running process blocked other processes from proceeding, the system would be effectively unusable.
 
-Concurrency models enable programmers to reason about and describe interactions between concurrent processes. The web browser is a good example of several different models: The user interface layer might rely on an event loop, the rendering process might operate in shared memory, and suggestions from browsing history or a search engine might require parallel collection operations or map-reduce to achieve acceptable performance~\cite{Marr2012}.
+Concurrency models enable programmers to reason about and describe interactions between concurrent processes. The web browser is a good example of several different models: The user interface layer might rely on an event loop, the rendering process might operate in shared memory, and suggestions from browsing history or a search engine might require parallel collection operations to achieve acceptable performance~\cite{Marr2012}.
 
-Given that an application is likely to make use of more than one concurrency model, programmers would prefer that different models could be combined. Composability is also desirable from an engineering standpoint---a virtual machine for one or more high-level languages should be able to support a variety of models without resorting to rough low-level approximations. However, different concurrency models are not necessarily composable and unexpected issues may arise when they interact. Recent work has attempted to identify unifying concurrency abstractions that would guarantee composability of different models and also provide underlying virtual machine support~\cite{Marr2009, Marr2012, Swalens2014, Ziv2015}.
+Given that an application is likely to make use of more than one concurrency model, programmers would prefer that different types of models could be arbitrarily combined. From an engineering standpoint, composable models are also desirable---a virtual machine for one or more high-level languages should be able to support a variety of models without resorting to rough low-level approximations. However, different concurrency models are not necessarily composable and unexpected issues may arise when they interact. Recent work has attempted to identify unifying concurrency abstractions that would guarantee composability of different models and also provide underlying virtual machine support~\cite{Marr2009, Marr2012, Swalens2014, Ziv2015}.
 
 \section{Background}
 
 Modern operating systems are expected to run many processes concurrently, and processes themselves are often composed of multiple concurrent threads of execution. A processor can only execute one thread at a time, so multitasking is accomplished by rapidly switching between threads~\cite{Liu1973}. Although concurrent threads may appear to be executed simultaneously, truly parallel execution can only take place across multiple processors.
 
-Concurrency models can abstract over implementation details, allowing programmers to reason in terms of asynchronous tasks and independent components instead of low-level thread management. In addition to making a program more understandable, higher-level models afford a degree of flexibility: Concurrent operations could be executed in an event loop on one thread, executed in multiple threads on the same processor, or executed in parallel.
+Concurrency models can abstract over implementation details, allowing programmers to reason in terms of asynchron\-ous tasks and independent components instead of low-level thread management. In addition to making a program more understandable, higher-level models afford a degree of flexibility: Regardless of whether a set of concurrent operations is executed in sequence on one thread, in multiple threads on the same processor, or in parallel on multiple processors, the result will be the same.
 
 \subsection{Concurrency}
 
-For operations to be executed concurrently, they must be able to be executed out of order or in partial order. Lamport, in his foundational work on distributed systems, formalized this by defining a ``happens before'' relation (denoted by ``$\rightarrow$'') on a set of operations: If $A$ and $B$ are operations in the same process and $A$ occurs before $B$, or if $A$ is the sending of a message by one process and $B$ is the receipt of the same message by another process, then $A \rightarrow B$. Two operations $A$ and $B$ are said to be concurrent if $A \nrightarrow B$ and $B \nrightarrow A$~\cite{Lamport1978}.
+For operations to be executed concurrently, they must be able to be executed out of order or in partial order. Lamport, in his foundational work on distributed systems~\cite{Lamport1978}, formalized this by defining a ``happens before'' relation (denoted by ``$\rightarrow$'' and its negation by ``$\nrightarrow$'') on a set of operations: If $A$ and $B$ are operations in the same process and $A$ occurs before $B$, or if $A$ is the sending of a message by one process and $B$ is the receipt of the same message by another process, then $A \rightarrow B$. Two operations $A$ and $B$ are said to be concurrent if $A \nrightarrow B$ and $B \nrightarrow A$.
 
-While the ``happens before'' relation can be used to determine whether operations can be executed concurrently, it does not guarantee the correctness of the results. In a non-concurrent (entirely sequential) program, it would be sufficient to show that the program is correct after the execution of each operation and therefore correct upon termination. In other words, the program could be proved to be correct by proving that its history (that is, the sequence in which its operations are performed) yields a correct result. Consistency models guarantee the correctness of a program by defining a set of all allowed histories~\cite{Ziv2015}. If an execution of a program follows an allowed history, the execution is consistent. If not, the execution is inconsistent. If every possible execution of the program follows an allowed history, the program conforms to the consistency model.
+While the ``happens before'' relation can be used to determine whether operations can be executed concurrently, it does not guarantee the correctness of the results. In a non-concurrent (entirely sequential) program, it would be sufficient to show that the program is correct after the execution of each operation and therefore correct upon termination. In other words, the program could be proved to be correct by proving that its history (that is, the sequence in which its operations are performed) yields a correct result. Consistency models guarantee the correctness of a program by defining a set of all allowed histories, or histories that lead to a correct result~\cite{Ziv2015}. If an execution of a program follows an allowed history, the execution is consistent. If not, the execution is inconsistent. If every possible execution of the program follows an allowed history, the program conforms to the consistency model.
 
 \begin{figure}[h]
   \centering
-  \begin{tikzpicture}
-    \draw [|-|] (0,0) node[left=3pt] {$ x $} -- (6,0);
-
-    \draw [<-] (0.5,0.25) -- (0.5,0.75) node[above=3pt] {$ 1 $};
-    \draw [->] (1,0.25) -- (1,0.75) node[above=3pt] {$ 1 $};
-
-    \draw [<-] (2,0.25) -- (2,0.75) node[above=3pt] {$ 2 $};
-    \draw [->] (2.75,0.25) -- (2.75,0.75) node[above=3pt] {$ 2 $};
-    \draw [->] (3.25,0.25) -- (3.25,0.75) node[above=3pt] {$ 2 $};
-
-    \draw [<-] (3.75,0.25) -- (3.75,0.75) node[above=3pt] {$ 3 $};
-
-    \draw [<-] (4.5,0.25) -- (4.5,0.75) node[above=3pt] {$ 4 $};
-    \draw [->] (5.5,0.25) -- (5.5,0.75) node[above=3pt] {$ 4 $};
-  \end{tikzpicture}
-  \caption{A single thread writes to and reads from a single variable.}
+  \includegraphics{single-thread-read-write}
+  \caption{A single thread writes to and reads from a variable.}
 \label{figure:single}
 \end{figure}
 
-Figure~\ref{figure:single} illustrates a simple program in which a single thread reads and writes numbers from a variable $x$. (Write operations are denoted by an arrow pointing toward the line and read operations by an arrow pointing away.) The program satisfies an intuitive model of how variables should behave---each time $x$ is read, the value is equal to the value of the most recent write.
+Figure~\ref{figure:single} illustrates a simple program in which a single thread reads and writes numbers from a variable $x$. The value of $x$ over time is represented by a segmented bar. Write operations are denoted by an arrow pointing toward the bar and read operations by an arrow pointing away. The program satisfies an intuitive model of how variables should behave---each time $x$ is read, the value is equal to the value of the most recent write.
 
 \begin{figure}[h]
   \centering
-  \begin{tikzpicture}
-    \draw [|-|] (0,0) node[left=3pt] {$ x $} -- (6,0);
-
-    \draw [<-] (0.5,-0.25) -- (0.5,-0.75) node[below=3pt] {$ 1 $};
-
-    \draw [<-] (0.75,0.25) -- (0.75,0.75) node[above=3pt] {$ 2 $};
-    \draw [->] (1,-0.25) -- (1,-0.75) node[below=3pt] {$ 2 $};
-    \draw [->] (1.5,0.25) -- (1.5,0.75) node[above=3pt] {$ 2 $};
-
-    \draw [<-] (2,-0.25) -- (2,-0.75) node[below=3pt] {$ 3 $};
-    \draw [->] (2.5,0.25) -- (2.5,0.75) node[above=3pt] {$ 3 $};
-    \draw [->] (2.75,-0.25) -- (2.75,-0.75) node[below=3pt] {$ 3 $};
-
-    \draw [<-] (3,0.25) -- (3,0.75) node[above=3pt] {$ 4 $};
-    \draw [->] (3.25,-0.25) -- (3.25,-0.75) node[below=3pt] {$ 4 $};
-
-    \draw [<-] (4,-0.25) -- (4,-0.75) node[below=3pt] {$ 5 $};
-    \draw [->] (4.25,0.25) -- (4.25,0.75) node[above=3pt] {$ 5 $};
-    \draw [->] (4.5,-0.25) -- (4.5,-0.75) node[below=3pt] {$ 5 $};
-
-    \draw [<-] (5,0.25) -- (5,0.75) node[above=3pt] {$ 6 $};
-    \draw [->] (5.25,-0.25) -- (5.25,-0.75) node[below=3pt] {$ 6 $};
-    \draw [->] (5.5,0.25) -- (5.5,0.75) node[above=3pt] {$ 6 $};
-  \end{tikzpicture}
-  \caption{Two threads concurrently write to and read from a single variable.}
+  \includegraphics{multiple-threads-read-write}
+  \caption{Two threads concurrently write to and read from a variable.}
 \label{figure:multiple}
 \end{figure}
 
-In a concurrent program, the history of operations may not be the same for every execution. As a result, assumptions about correctness that are true for a sequential program may be violated in a concurrent program. This is illustrated in Figure~\ref{figure:multiple}, in which two threads concurrently write from and read to a variable $x$ concurrently. Because the operations of the threads are interleaved, a read operation on $x$ may not yield a value that matches the value of that thread's most recent write. The value may even be inconsistent between consecutive reads. (Errors that arise due to unintentional dependency on execution order are referred to as race conditions.) From the perspective of a single thread, the program appears to be incorrect because it violates the same intuitive model of how variables should behave.
+In a concurrent program, the history of operations may not be the same for every execution. As a result, assumptions about correctness that are true for a sequential program may be violated in a concurrent program. This is illustrated in Figure~\ref{figure:multiple}, in which two threads concurrently write from and read to a variable $x$ concurrently. Because the operations of the threads are interleaved, a read operation on $x$ may not yield a value that matches the value of that thread's most recent write. The value may even be inconsistent between consecutive reads. If a single thread were to incorrectly assume that it had exclusive control of $x$, this behavior would appear incorrect and could lead to race conditions, errors that arise due to unintentional dependency on execution order are referred to as race conditions.
 
 \subsection{Linearizability}
 
@@ -113,33 +78,38 @@ The examples above assume that all operations complete instantaneously. In real 
 
 \begin{figure}[h]
   \centering
-  \begin{tikzpicture}
-    \draw [|-|] (0,0) node[left=3pt] {$ x $} -- (6,0);
-
-    \draw (0.75,0.25) -- (0.5,0.75) node [above left] {$ 1 $};
-    \draw (0.75,0.25) -- (1,0.75);
-
-    \draw (3.75,-0.25) -- (2,-0.75);
-    \draw (3.75,-0.25) -- (5.5,-0.75) node [below right] {$ 2 $};
-
-    \draw (3.25,0.25) -- (3,0.75) node [above left] {$ 2 $};
-    \draw (3.25,0.25) -- (3.5,0.75);
-  \end{tikzpicture}
-  \caption{Two threads concurrently (and noninstantaneously) write to and read from a single variable.}
+  \includegraphics{noninstantaneity}
+  \caption{Two threads concurrently (and noninstantaneously) write to and read from a variable.}
 \label{figure:time}
 \end{figure}
 
-Consider a third example (Figure~\ref{figure:time}) in which two threads interact with a variable $x$ noninstantanously. (Invocation is denoted by the leftmost point of an event and completion by the rightmost point. The point closest to the line indicates the instant at which the operation takes effect.) The lower thread invokes a read while the value of $x$ is set to $1$. The upper thread invokes and completes a write between the time that the read is invoked and the value is actually read. The read operation then returns $2$ even though $x$ was equal to $1$ at the time it was invoked.
+Consider a third example (Figure~\ref{figure:time}) in which two threads interact with a variable $x$ noninstantanously. Invocation is denoted by the leftmost point of an event and completion by the rightmost point. The dotted line indicates the instant at which the operation takes effect. The lower thread invokes a read while the value of $x$ is set to $1$. The upper thread invokes and completes a write between the time that the read is invoked and the value is actually read. The read operation then returns $2$ even though $x$ was equal to $1$ at the time it was invoked.
 
 While travel time may introduce ambiguity, there are still some restrictions on possible sequences of events. Specifically, an operation cannot take effect before its invocation, nor can it take effect after its completion. Therefore, assuming that all threads share some single global state and that operations on that state take place atomically, each operation will appear to take effect atomically at some point after it is invoked and before it is completed.
 
-This consistency model is referred to as linearizability (also referred to as atomicity or indivisibility), and it guarantees that the completion of an operation on a single object will appear to the rest of the system to be instantaneous~\cite{Herlihy1990}. In other words, even though linearizable operations are executed concurrently and take time, they appear to happen in a simple linear order.
+\begin{figure}[h]
+  \centering
+  \includegraphics{linearizability}
+  \caption{A single thread performs an atomic write operation on a variable.}
+\label{figure:linearizability}
+\end{figure}
 
-A useful consequence of linearizability is that the results of an operation must be visible as soon as the operation is complete. This can prevent issues such as stale reads (in which a read operation returns a value different from the most recently written value) and non-monotonic reads (in which a later read operation returns an older value than an earlier read operation).
+This consistency model is referred to as linearizability (also referred to as atomicity or indivisibility), and it guarantees that the completion of an operation on a single object will appear to the rest of the system to be instantaneous~\cite{Herlihy1990}. In other words, even though linearizable operations are executed concurrently and take time, they appear to happen in a simple linear order. Figure~\ref{figure:linearizability} demonstrates an atomic write on a variable $x$: Although the operation takes time, the entire operation (denoted by the shaded area) can be collapsed into one apparently instantaneous event.
+
+A useful consequence of linearizability is that the results of an operation must be visible as soon as the operation is complete. This can prevent issues such as stale reads (in which a read operation returns a value different from the most recently written value) and non-monotonic reads (in which a later read operation returns an older value than an earlier read operation). Linearizability is also a composable guarantee~\cite{Herlihy1990}---an operation made up of smaller linearizable operations is itself linearizable.
 
 \subsection{Serializability}
 
 A history of operations is said to be serializable if it is equivalent to a serial (i.e., non-interleaved) ordering of its operations~\cite{Herlihy1990}. Serializability is like linearizability in that it demands some linear order of execution. However, serializability describes multiple operations over multiple objects instead of single operations on single objects, and it does not impose any wall-clock time constraints on the history. This means that operations may occur in any order as long as some serial history exists.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics{serializability}
+  \caption{Two threads perform a set of serializable read and write operations on a variable.}
+\label{figure:serializability}
+\end{figure}
+
+Figure~\ref{figure:serializability} illustrates a set of serializable read and write operations. Even though the durations of each event occur out of order and even cross, the events themselves are equivalent to a serial history: $x \leftarrow 1$, $x = 1$, $x \leftarrow 2$, $x = 2$.
 
 Serializability alone is a fairly weak consistency model. Because it does not place bounds on time or order, events may happen out of sequence. However, serializability does guarantee isolation~\cite{Haerder1983}. In order for histories to be serializable, they must not overlap and cannot interfere with each other.
 
@@ -153,7 +123,7 @@ Modern programming languages generally provide several different concurrency mod
 
 Atomic variables can only be read and mutated by operations that guarantee atomicity. For example, an atomic operation \emph{compare-and-swap} compares the current value of a variable to a given value and only performs a write if the values match~\cite{Swalens2014}. \emph{compare-and-swap} ensures that a new value cannot be written based on outdated information. Suppose that a thread $A$ reads a variable $v$ and begins computing a new value. At the same time, another thread $B$ modifies $v$. When $A$ tries to set the value of $v$ via \emph{compare-and-swap}, the write will fail. As a result, all writes on $v$ are guaranteed to be atomic.
 
-Atomic operations like \emph{compare-and-swap} (and, similarly, \emph{fetch-and-add} and \emph{test-and-set}) are often implemented in hardware and guarantee linearizability at the lowest level possible. As such, atomic variables often serve as the basis for higher-level concurrency control mechanisms such as semaphores and locks, which in turn support the implementation of concurrent data structures. (Linearizability is a composable guarantee~\cite{Herlihy1990}; an operation made up of smaller linearizable operations is itself linearizable.)
+Atomic operations like \emph{compare-and-swap} (and, similarly, \emph{fetch-and-add} and \emph{test-and-set}) are often implemented in hardware and guarantee linearizability at the lowest level possible. As such, atomic variables often serve as the basis for higher-level concurrency control mechanisms such as semaphores and locks, which in turn support the implementation of concurrent data structures.
 
 A counting semaphore is an atomic variable that serves as a record of how many units of a shared resource are available. By taking advantage of atomic operations, the semaphore can be safely updated and will reliably determine whether a shared resource can be used. A single thread can then test if a resource is available and acquire it before proceeding, thereby preventing race conditions~\cite{Swalens2014}. A lock (also referred to as a mutex) guarantees mutual exclusion, which requires that two threads cannot operate on a shared object at the same time. Locks are commonly implemented by a binary semaphore (that is, a semaphore that simply indicates whether a single resource is available).
 
@@ -217,7 +187,7 @@ Marr and D'Hondt~\cite{Marr2012} surveyed a variety of concurrent and parallel p
   \item Is the concept already supported by a common VM like the Java Virtual Machine (JVM) or the Common Language Runtime (CLR)?
 \end{enumerate}
 
-From those questions, 26 concepts were identified that would benefit from better low-level support. 
+From those questions, 26 concepts were identified that would benefit from better low-level support.
 
 \section{Conclusion}
 
