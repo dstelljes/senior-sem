@@ -1,3 +1,7 @@
+# Senior Seminar
+
+![Success is not final, failure is not fatal: it is the amount of baked goods remaining that counts.][cookies]
+
 | Date due   | Deliverable                              | Files                                                          |
 |------------|------------------------------------------|----------------------------------------------------------------|
 | 2016-09-01 | [Previous paper analysis][analysis]      | [source][analysis-source], [PDF][analysis-final]               |
@@ -17,6 +21,7 @@
 [complete-draft]: https://github.com/dstelljes/senior-sem/tree/master/paper
 [complete-draft-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSYzlRWjd6X0FQNmM/view?usp=sharing
 [complete-draft-source]: https://github.com/dstelljes/senior-sem/blob/e804e02f1252347e5c1ba634e4222e8545b2ced2/paper/paper.tex
+[cookies]: https://img.shields.io/badge/cookies-3-orange.svg
 [four-page-draft]: https://github.com/dstelljes/senior-sem/tree/master/paper
 [four-page-draft-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSUXo3aUNHRTdYNHM/view?usp=sharing
 [four-page-draft-source]: https://github.com/dstelljes/senior-sem/blob/123c0607874bc77767189f1a473431983491cbdf/paper/paper.tex
