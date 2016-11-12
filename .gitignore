@@ -20,4 +20,5 @@
 
 *.dvi
 *.pdf
+!/figures/*.pdf
 *-converted-to.*
