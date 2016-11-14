@@ -4,6 +4,7 @@
 \usepackage[backend=bibtex,citestyle=authortitle]{biblatex}
 \usepackage[scale=2]{ccicons}
 \usepackage{graphicx}
+\usepackage{listings}
 \usepackage{tikz}
 
 % this actually isn't totally hideous:
@@ -21,7 +22,7 @@
   \maketitle
 
   \section{Introduction}
-  
+
   \begin{frame}
     \begin{figure}
       \begin{tikzpicture}
@@ -55,7 +56,7 @@
           \draw (2.5,-1.5) [draw=none, fill=darkgray, opacity=0.75] ellipse (60pt and 25pt);
           \node [text=white] at (2.5,-1.5) {
             Background processes
-          }; 
+          };
         }
 
         \onslide<3>{
@@ -217,8 +218,26 @@
 
   \subsection{Atomic variables}
 
-  \begin{frame}
-  \end{frame}
+  \begin{frame}[fragile]
+    \frametitle{Atomic variables}
+
+    \begin{itemize}
+      \item Atomic variables can only be read and mutated by linearizable operations:
+    \end{itemize}
+
+    \begin{lstlisting}[basicstyle=\scriptsize\ttfamily,language=C]
+      bool compare_and_swap(int* v, int old, int new) {
+        if (*v != old) {
+          return false;
+        }
+
+        *v = new;
+        return true;
+      }
+    \end{lstlisting}
+
+% "good indentation? lol get bent" —Beamer
+\end{frame}
 
   \subsection{Software transactional memory}
 
@@ -256,7 +275,7 @@
 
     \vfill
 
-    \ccbyncsa
+    \ccbyncsa{}
   \end{frame}
- 
+
 \end{document}
