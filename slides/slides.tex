@@ -1,5 +1,7 @@
 \documentclass{beamer}
 
+\usepackage[USenglish]{babel}
+\usepackage[backend=bibtex,citestyle=authortitle]{biblatex}
 \usepackage{graphicx}
 \usepackage{tikz}
 
@@ -11,6 +13,8 @@
 \title{Composable Concurrency Models}
 \date{November 19, 2016}
 \author{Dan Stelljes}
+
+\bibliography{references}
 
 \begin{document}
   \maketitle
@@ -61,4 +65,135 @@
       \end{tikzpicture}
     \end{figure}
   \end{frame}
+
+  \section{Background}
+
+  \begin{frame}
+    \frametitle{Concurrency}
+    \framesubtitle{Intuitive definition}
+
+    \onslide<1>{
+      \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+          \centering
+          sequential
+        \end{column}
+
+        \hfill
+
+        \begin{column}{0.48\textwidth}
+          \centering
+          concurrent
+        \end{column}
+      \end{columns}
+    }
+
+    \onslide<2>{
+      \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+          \centering
+          concurrent
+        \end{column}
+
+        \hfill
+
+        \begin{column}{0.48\textwidth}
+          \centering
+          parallel
+        \end{column}
+      \end{columns}
+    }
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Concurrency}
+    \framesubtitle{Formal definition}
+
+    \textbf{The ``happens before'' ($\rightarrow$) relation~\footcite{Lamport1977}}
+
+    $A \rightarrow B$ if one of the following is true:
+
+    \begin{enumerate}
+      \item $A$ and $B$ are operations in the same thread and $A$ occurs before $B$.
+      \item $A$ is the sending of a message by one thread and $B$ is the receipt of the same message by another thread.
+    \end{enumerate}
+
+    $A$ and $B$ are said to be concurrent if $A \nrightarrow B$ and $B \nrightarrow A$.
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Consistency models}
+
+    \begin{itemize}
+      \item \textbf{Sequential:} Does the history of the program yield a correct result?
+      \item \textbf{Concurrent:} Does every possible history of the program yield a correct result?
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Complications}
+
+    \onslide<1->{
+      \centering
+      \includegraphics{single-thread-read-write}
+    }
+
+    \onslide<2->{
+      \centering
+      \includegraphics{multiple-threads-read-write}
+    }
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Complications}
+
+    \begin{figure}
+      \centering
+      \includegraphics{noninstantaneity}
+    \end{figure}
+
+    \begin{itemize}
+      \item Nothing is truly instantaneous.
+      \item The history of a program may be influenced by the time it takes for operations to complete.
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Linearizability}
+
+    \begin{figure}
+      \centering
+      \includegraphics{linearizability}
+    \end{figure}
+
+    \begin{itemize}
+      \item Linearizability guarantees that the completion of an operation on a single object will appear to be instantaneous.
+      \item The results of a linearizable operation will be visible as soon as the operation is complete.
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Serializability}
+
+    \begin{figure}
+      \centering
+      \includegraphics{serializability}
+    \end{figure}
+
+    \begin{itemize}
+      \item Serializability guarantees that operations can occur in any order as long as an equivalent serial history exists.
+      \item While a serializable set of operations is being executed, it appears to be the only set of operations being executed.
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Strict serializability}
+
+    \begin{itemize}
+      \item Linearizability is a guarantee of consistency.
+      \item Serializability is a guarantee of isolation.
+      \item Together, linearizability and serializability guarantee strict serializability---a history is equivalent to some serial execution order and that order corresponds to the execution order in real time.
+    \end{itemize}
+  \end{frame}
+ 
 \end{document}
