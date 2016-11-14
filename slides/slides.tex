@@ -2,11 +2,12 @@
 
 \usepackage[USenglish]{babel}
 \usepackage[backend=bibtex,citestyle=authortitle]{biblatex}
+\usepackage[scale=2]{ccicons}
 \usepackage{graphicx}
 \usepackage{tikz}
 
 % this actually isn't totally hideous:
-\usetheme[numbering=counter, progressbar=foot, sectionpage=none]{metropolis}
+\usetheme[numbering=counter, progressbar=frametitle, sectionpage=none]{metropolis}
 
 \graphicspath{{../figures/}}
 
@@ -68,6 +69,8 @@
 
   \section{Background}
 
+  \subsection{Concurrency}
+
   \begin{frame}
     \frametitle{Concurrency}
     \framesubtitle{Intuitive definition}
@@ -121,6 +124,8 @@
     $A$ and $B$ are said to be concurrent if $A \nrightarrow B$ and $B \nrightarrow A$.
   \end{frame}
 
+  \subsection{Consistency}
+
   \begin{frame}
     \frametitle{Consistency models}
 
@@ -151,12 +156,9 @@
       \centering
       \includegraphics{noninstantaneity}
     \end{figure}
-
-    \begin{itemize}
-      \item Nothing is truly instantaneous.
-      \item The history of a program may be influenced by the time it takes for operations to complete.
-    \end{itemize}
   \end{frame}
+
+  \subsection{Correctness}
 
   \begin{frame}
     \frametitle{Linearizability}
@@ -194,6 +196,67 @@
       \item Serializability is a guarantee of isolation.
       \item Together, linearizability and serializability guarantee strict serializability---a history is equivalent to some serial execution order and that order corresponds to the execution order in real time.
     \end{itemize}
+  \end{frame}
+
+  \section{Common concurrency models}
+
+  \begin{frame}
+    \frametitle{Concurrency models}
+
+    \begin{itemize}
+      \item Modern languages usually support several different models.
+      \item Common concurrency models can be generalized:~\footcite{Swalens2014}
+      \begin{enumerate}
+        \item Atomic variables
+        \item Software transactional memory (STM)
+        \item Communicating threads
+        \item Proxies
+      \end{enumerate}
+    \end{itemize}
+  \end{frame}
+
+  \subsection{Atomic variables}
+
+  \begin{frame}
+  \end{frame}
+
+  \subsection{Software transactional memory}
+
+  \begin{frame}
+  \end{frame}
+
+  \subsection{Communicating threads}
+
+  \begin{frame}
+  \end{frame}
+
+  \subsection{Proxies}
+
+  \begin{frame}
+  \end{frame}
+
+  \section{Composability challenges}
+
+  \subsection{Possible conflicts}
+
+  \section{Proposed abstractions}
+
+  \subsection{Ownership-based meta-object protocol}
+
+  \section{Conclusion}
+
+  \begin{frame}
+    \frametitle{Future work}
+  \end{frame}
+
+  \begin{frame}[standout]
+    \centering
+
+    \url{github.com/dstelljes/senior-sem}
+
+    \vfill
+
+    \ccbyncsa
   \end{frame}
  
 \end{document}
