@@ -195,7 +195,7 @@
     \begin{itemize}
       \item Linearizability is a guarantee of consistency.
       \item Serializability is a guarantee of isolation.
-      \item Together, linearizability and serializability guarantee strict serializability---a history is equivalent to some serial execution order and that order corresponds to the execution order in real time.
+      \item Together, linearizability and serializability guarantee strict serializability---a history is equivalent to some serial execution order and that order corresponds to the execution order in real time.~\footcite{Herlihy1990}
     \end{itemize}
   \end{frame}
 
@@ -206,7 +206,7 @@
 
     \begin{itemize}
       \item Modern languages usually support several different models.
-      \item Common concurrency models can be generalized:~\footcite{Swalens2014}
+      \item Common concurrency models fall into four general categories:~\footcite{Swalens2014}
       \begin{enumerate}
         \item Atomic variables
         \item Software transactional memory (STM)
@@ -221,46 +221,225 @@
   \begin{frame}[fragile]
     \frametitle{Atomic variables}
 
-    \begin{itemize}
-      \item Atomic variables can only be read and mutated by linearizable operations:
-    \end{itemize}
-
     \begin{lstlisting}[basicstyle=\scriptsize\ttfamily,language=C]
-      bool compare_and_swap(int* v, int old, int new) {
-        if (*v != old) {
-          return false;
-        }
-
-        *v = new;
-        return true;
+      void unsafe_increment() {
+        *variable++;
       }
     \end{lstlisting}
-
 % "good indentation? lol get bent" —Beamer
 \end{frame}
+
+  \begin{frame}[fragile]
+    \frametitle{Atomic variables}
+
+    \begin{lstlisting}[basicstyle=\scriptsize\ttfamily,language=C]
+      int fetch_and_add(int* variable, int increment) {
+        // obtain exclusive control of variable
+
+        int value = *variable + increment;
+        *variable = value;
+
+        // release exclusive control of variable
+
+        return value;
+      }
+
+      void safe_increment() {
+        fetch_and_add(variable, 1);
+      }
+    \end{lstlisting}
+\end{frame}
+
+  \begin{frame}[fragile]
+    \frametitle{Atomic variables}
+
+    \begin{lstlisting}[basicstyle=\scriptsize\ttfamily,language=Java]
+      AtomicInteger variable = new AtomicInteger(23);
+      variable.incrementAndGet();
+    \end{lstlisting}
+
+    \vfill
+
+    \begin{lstlisting}[basicstyle=\scriptsize\ttfamily,language=Lisp]
+      (def variable (atom 23))
+      (swap! variable inc)
+    \end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+    \frametitle{Atomic variables}
+
+    Atomic variables are\ldots
+
+    \begin{itemize}
+      \item used to share objects that are shared by multiple threads but don't require coordinated updates
+      \item usually implemented in hardware, guaranteeing linearizability at the lowest level possible
+      \item used to implement higher-level concurrency control mechanisms and concurrent data structures
+    \end{itemize}
+  \end{frame}
 
   \subsection{Software transactional memory}
 
   \begin{frame}
+    \frametitle{Software transactional memory}
+
+    Another approach to working with shared memory:~\footcite{Shavit1995}
+
+    \begin{enumerate}
+      \item A thread writes to a shared memory location, keeping track of the transaction in a log.
+      \item If there are conflicting changes at the end of the transaction, the transaction is aborted and retried until it eventually succeeds.
+      \item Once a transaction succeeds, changes will become visible to other threads.
+    \end{enumerate}
+  \end{frame}
+
+  \begin{frame}[fragile]
+    \frametitle{Software transactional memory}
+
+    \begin{lstlisting}[basicstyle=\scriptsize\ttfamily,language=Java]
+
+      import akka.stm.*;
+
+      Ref<Integer> reference = new Ref<Integer>(23);
+
+      new Atomic<Integer>() {
+        public Integer atomically() {
+          int value = reference.get();
+          reference.set(value++);
+
+          return value;
+        }
+      }.execute();
+    \end{lstlisting}
+
+    \vfill
+
+    \begin{lstlisting}[basicstyle=\scriptsize\ttfamily,language=Lisp]
+      (def reference (ref 23))
+      (dosync (alter reference inc))
+    \end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+    \frametitle{Software transactional memory}
+
+    STM is\ldots
+
+    \begin{itemize}
+      \item used to share objects that need to be accessed and modified by multiple threads
+      \item a simple alternative to lock-based programming
+      \item susceptible to performance decreases caused by maintaining a transaction log and retrying transactions
+      \item unable to execute operations that cannot be undone or retried
+    \end{itemize}
   \end{frame}
 
   \subsection{Communicating threads}
 
   \begin{frame}
+    \frametitle{Communicating threads}
+
+    \begin{itemize}
+      \item Communicating sequential processes (CSP) describes systems as independent processes that communicate synchronously through predefined channels.~\footcite{Hoare1978}
+      \item The actor model relies on asynchronous message passing to specific entities.~\footcite{Agha1986}
+      \item The agent model emulates atomic references by containing a shared object in a separate process.~\footcite{Swalens2014}
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Communicating threads}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Communicating threads}
+
+    Communicating threads are\ldots
+
+    \begin{itemize}
+      \item used to avoid working with shared objects
+      \item helpful when communicating with external systems or running an event loop
+    \end{itemize}
   \end{frame}
 
   \subsection{Proxies}
 
   \begin{frame}
+    \frametitle{Proxies}
+
+    Proxies serve as placeholders for results of concurrent operations.
+
+    \begin{itemize}
+      \item \textbf{Futures:} eventually resolved to the result of the completed operation; result is accessed implicitly
+      \item \textbf{Promises:} exist as independent objects; result is accessed explicitly
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Proxies}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Proxies}
+
+    Proxies are\ldots
+
+    \begin{itemize}
+      \item used to execute long-running operations without blocking other operations
+      \item easily passed around and composed
+    \end{itemize}
   \end{frame}
 
   \section{Composability challenges}
 
-  \subsection{Possible conflicts}
+  \begin{frame}
+    \frametitle{Composability challenges}
+    Need some stuff here.~\footcite{Swalens2014}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Correctness criteria}
+
+    \begin{itemize}
+      \item \textbf{Safety:} nothing bad will happen (partial correctness)
+      \item \textbf{Liveness:} something good will eventually happen (with safety, total correctness)
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Possible conflicts}
+
+    \begin{itemize}
+      \item A model reexecutes code containing another model that performs an irrevocable action.
+      \item A model reexecutes code that causes the reexecution to continually happen.
+      \item A model that supports blocking operations is used within a model that does not support blocking operations.
+      \item A model does not guarantee safety or liveness by design, making composability impossible.
+    \end{itemize}
+  \end{frame}
 
   \section{Proposed abstractions}
 
   \subsection{Ownership-based meta-object protocol}
+
+  \begin{frame}
+    \frametitle{Ownership-based meta-object protocol}
+
+    \begin{enumerate}
+      \item Can the concept be reasonably implemented as a library?
+      \item Does the concept require runtime support to guarantee its semantics?
+      \item Would runtime support benefit performance?
+      \item Is the concept already supported by a common virtual machine (e.g., the JVM or the CLR)?
+    \end{enumerate}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Ownership-based meta-object protocol}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Ownership-based meta-object protocol}
+
+    \centering
+
+    \includegraphics[width=150pt]{obmop}
+  \end{frame}
 
   \section{Conclusion}
 
@@ -270,6 +449,10 @@
 
   \begin{frame}[standout]
     \centering
+
+    Thanks to Elena Machkasova, K.K. Lamberty, and Matthew Justin for their guidance and suggestions.
+
+    \vfill
 
     \url{github.com/dstelljes/senior-sem}
 
