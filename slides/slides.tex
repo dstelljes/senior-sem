@@ -1,5 +1,6 @@
 \documentclass{beamer}
 
+\usepackage{appendixnumberbeamer}
 \usepackage[USenglish]{babel}
 \usepackage[backend=bibtex,citestyle=authortitle]{biblatex}
 \usepackage[scale=2]{ccicons}
@@ -9,6 +10,8 @@
 
 % this actually isn't totally hideous:
 \usetheme[numbering=counter, progressbar=frametitle, sectionpage=none]{metropolis}
+\setbeamertemplate{bibliography item}[text]
+\setbeamertemplate{frametitle continuation}{}
 
 \graphicspath{{../figures/}}
 
@@ -18,54 +21,17 @@
 
 \bibliography{references}
 
+\AtEveryBibitem{\clearfield{note}}
+\AtEveryBibitem{\clearfield{url}}
+
 \begin{document}
   \maketitle
 
   \section{Introduction}
 
   \begin{frame}
-    \begin{figure}
-      \begin{tikzpicture}
-        \onslide<1->{
-          \node at (0,0) {
-            \includegraphics[width=300pt]{browser}
-          };
-        }
-
-        \onslide<2>{
-          \path (-2.25,2.75) [draw=none, fill=darkgray, opacity=0.75] ellipse (60pt and 25pt);
-          \node [text=white] at (-2.25,2.75) {
-            Multiple tabs
-          };
-
-          \draw (2.25,2.25) [draw=none, fill=darkgray, opacity=0.75] ellipse (60pt and 25pt);
-          \node [text=white] at (2.25,2.25) {
-            Suggestions
-          };
-
-          \draw (0,0.5) [draw=none, fill=darkgray, opacity=0.75] ellipse (60pt and 25pt);
-          \node [text=white] at (0,0.5) {
-            Page rendering
-          };
-
-          \draw (-3,-1.5) [draw=none, fill=darkgray, opacity=0.75] ellipse (60pt and 25pt);
-          \node [text=white] at (-3,-1.5) {
-            Event handling
-          };
-
-          \draw (2.5,-1.5) [draw=none, fill=darkgray, opacity=0.75] ellipse (60pt and 25pt);
-          \node [text=white] at (2.5,-1.5) {
-            Background processes
-          };
-        }
-
-        \onslide<3>{
-          \node at (0,-0.62) {
-            \includegraphics[width=220pt]{goals}
-          };
-        }
-      \end{tikzpicture}
-    \end{figure}
+    \centering
+    \resizebox{\linewidth}{!}{\input{../figures/introduction.tikz}}
   \end{frame}
 
   \section{Background}
@@ -74,44 +40,6 @@
 
   \begin{frame}
     \frametitle{Concurrency}
-    \framesubtitle{Intuitive definition}
-
-    \onslide<1>{
-      \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-          \centering
-          sequential
-        \end{column}
-
-        \hfill
-
-        \begin{column}{0.48\textwidth}
-          \centering
-          concurrent
-        \end{column}
-      \end{columns}
-    }
-
-    \onslide<2>{
-      \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-          \centering
-          concurrent
-        \end{column}
-
-        \hfill
-
-        \begin{column}{0.48\textwidth}
-          \centering
-          parallel
-        \end{column}
-      \end{columns}
-    }
-  \end{frame}
-
-  \begin{frame}
-    \frametitle{Concurrency}
-    \framesubtitle{Formal definition}
 
     \textbf{The ``happens before'' ($\rightarrow$) relation~\footcite{Lamport1977}}
 
@@ -122,52 +50,59 @@
       \item $A$ is the sending of a message by one thread and $B$ is the receipt of the same message by another thread.
     \end{enumerate}
 
+    If $A \rightarrow B$ and $B \rightarrow C$, then $A \rightarrow C$.
+
     $A$ and $B$ are said to be concurrent if $A \nrightarrow B$ and $B \nrightarrow A$.
   \end{frame}
 
-  \subsection{Consistency}
+  \subsection{Complications}
 
   \begin{frame}
-    \frametitle{Consistency models}
+    \frametitle{Complications}
 
     \begin{itemize}
-      \item \textbf{Sequential:} Does the history of the program yield a correct result?
-      \item \textbf{Concurrent:} Does every possible history of the program yield a correct result?
+      \item \textbf{Sequential program:} Does the order of operations yield a correct result?
+      \vfill
+      \item \textbf{Concurrent program:} Does \emph{every possible} order of operations yield a correct result?
     \end{itemize}
   \end{frame}
 
   \begin{frame}
     \frametitle{Complications}
+    \centering
 
-    \onslide<1->{
-      \centering
-      \includegraphics{single-thread-read-write}
-    }
+    \textbf{Single thread:}
+    \vfill
+    \resizebox{0.9\linewidth}{!}{\input{../figures/single-thread-read-write.tikz}}
+  \end{frame}
 
-    \onslide<2->{
-      \centering
-      \includegraphics{multiple-threads-read-write}
-    }
+  \begin{frame}
+    \frametitle{Complications}
+    \centering
+
+    \textbf{Multiple threads:}
+    \vfill
+    \resizebox{0.9\linewidth}{!}{\input{../figures/multiple-threads-read-write.tikz}}
   \end{frame}
 
   \begin{frame}
     \frametitle{Complications}
 
-    \begin{figure}
-      \centering
-      \includegraphics{noninstantaneity}
-    \end{figure}
+    \centering
+    \input{../figures/noninstantaneity.tikz}
   \end{frame}
 
-  \subsection{Correctness}
+  \subsection{Consistency models}
 
   \begin{frame}
     \frametitle{Linearizability}
 
     \begin{figure}
       \centering
-      \includegraphics{linearizability}
+      \input{../figures/linearizability.tikz}
     \end{figure}
+
+    \vfill
 
     \begin{itemize}
       \item Linearizability guarantees that the completion of an operation on a single object will appear to be instantaneous.
@@ -180,11 +115,13 @@
 
     \begin{figure}
       \centering
-      \includegraphics{serializability}
+      \input{../figures/serializability.tikz}
     \end{figure}
 
+    \vfill
+
     \begin{itemize}
-      \item Serializability guarantees that operations can occur in any order as long as an equivalent serial history exists.
+      \item Serializability guarantees that operations can occur in any order as long as an equivalent sequential ordering exists.
       \item While a serializable set of operations is being executed, it appears to be the only set of operations being executed.
     \end{itemize}
   \end{frame}
@@ -195,7 +132,7 @@
     \begin{itemize}
       \item Linearizability is a guarantee of consistency.
       \item Serializability is a guarantee of isolation.
-      \item Together, linearizability and serializability guarantee strict serializability---a history is equivalent to some serial execution order and that order corresponds to the execution order in real time.~\footcite{Herlihy1990}
+      \item Together, linearizability and serializability guarantee strict serializability---an ordering of operations is equivalent to some sequential ordering and that ordering corresponds to the execution ordering in real time.~\footcite{Herlihy1990}
     \end{itemize}
   \end{frame}
 
@@ -449,16 +386,19 @@
 
   \begin{frame}[standout]
     \centering
-
     Thanks to Elena Machkasova, K.K. Lamberty, and Matthew Justin for their guidance and suggestions.
-
     \vfill
-
-    \url{github.com/dstelljes/senior-sem}
-
+    \href{https://github.com/dstelljes/senior-sem}{github.com/dstelljes/senior-sem}
     \vfill
-
     \ccbyncsa{}
+  \end{frame}
+
+  \appendix{}
+
+  \begin{frame}[allowframebreaks]
+    \frametitle{References}
+
+    \printbibliography{}
   \end{frame}
 
 \end{document}

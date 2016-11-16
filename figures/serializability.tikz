@@ -1,0 +1,19 @@
+\begin{tikzpicture}
+  \node at (-3.333,0) { $x$ };
+
+  \draw (-3,-0.333) rectangle (-1,0.333) node [midway] { \small $1$ };
+  \draw (-1,-0.333) rectangle (1,0.333) node [midway] { \small $2$ };
+  \draw (1,-0.333) rectangle (3,0.333) node [midway] { \small $3$ };
+
+  \draw (0.333,1.167) -- (-1,0.5) (-1,0.5) -- (1,1.167);
+  \draw [dashed] (-1,0.5) -- (0.667,1.167) node [above=3pt] { \small $x \leftarrow 2$ };
+
+  \draw (0.5,-1.167) -- (0.167,-0.5) (0.167,-0.5) -- (0.833,-1.167);
+  \draw [dashed] (0.167,-0.5) -- (0.667,-1.167) node [below=3pt] { \small $x = 2$ };
+
+  \draw (-2,-1.167) -- (1,-0.5) (1,-0.5) -- (-1.25,-1.167);
+  \draw [dashed] (1,-0.5) -- (-1.625, -1.167) node [below=3pt] { \small $x \leftarrow 3$ };
+
+  \draw (-1,1.167) -- (1.333,0.5) (1.333,0.5) -- (-0.333,1.167);
+  \draw [dashed] (1.333,0.5) -- (-0.667,1.167) node [above=3pt] { \small $x = 3$ };
+\end{tikzpicture}

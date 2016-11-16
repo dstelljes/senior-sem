@@ -2,6 +2,7 @@
 \usepackage[USenglish]{babel}
 \usepackage[backend=bibtex,style=numeric-comp]{biblatex}
 \usepackage{graphicx}
+\usepackage{tikz}
 
 \graphicspath{{../figures/}}
 
@@ -57,7 +58,7 @@ While the ``happens before'' relation can be used to determine whether operation
 
 \begin{figure}[h]
   \centering
-  \includegraphics{single-thread-read-write}
+  \resizebox{\linewidth}{!}{\input{../figures/single-thread-read-write.tikz}}
   \caption{A single thread writes to and reads from a variable.}
 \label{figure:single}
 \end{figure}
@@ -66,7 +67,7 @@ Figure~\ref{figure:single} illustrates a simple program in which a single thread
 
 \begin{figure}[h]
   \centering
-  \includegraphics{multiple-threads-read-write}
+  \resizebox{\linewidth}{!}{\input{../figures/multiple-threads-read-write.tikz}}
   \caption{Two threads concurrently write to and read from a variable.}
 \label{figure:multiple}
 \end{figure}
@@ -79,7 +80,7 @@ The examples above assume that all operations complete instantaneously. In real 
 
 \begin{figure}[h]
   \centering
-  \includegraphics{noninstantaneity}
+  \resizebox{0.63\linewidth}{!}{\input{../figures/noninstantaneity.tikz}}
   \caption{Two threads concurrently (and noninstantaneously) write to and read from a variable.}
 \label{figure:time}
 \end{figure}
@@ -90,7 +91,7 @@ While travel time may introduce ambiguity, there are still some restrictions on 
 
 \begin{figure}[h]
   \centering
-  \includegraphics{linearizability}
+  \resizebox{0.63\linewidth}{!}{\input{../figures/linearizability.tikz}}
   \caption{A single thread performs an atomic write operation on a variable.}
 \label{figure:linearizability}
 \end{figure}
@@ -105,7 +106,7 @@ A history of operations is said to be serializable if it is equivalent to a seri
 
 \begin{figure}[h]
   \centering
-  \includegraphics{serializability}
+  \resizebox{0.63\linewidth}{!}{\input{../figures/serializability.tikz}}
   \caption{Two threads perform a set of serializable read and write operations on a variable.}
 \label{figure:serializability}
 \end{figure}
