@@ -1,7 +1,7 @@
 \begin{tikzpicture}
   \onslide<1->{
     \node at (0,0) {
-      \includegraphics[width=300pt]{browser}
+      \includegraphics[width=300pt]{../figures/browser}
     };
   }
 
@@ -34,7 +34,7 @@
 
   \onslide<3>{
     \node at (0,-0.62) {
-      \includegraphics[width=220pt]{goals}
+      \includegraphics[width=220pt]{../figures/goals}
     };
   }
 \end{tikzpicture}
