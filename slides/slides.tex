@@ -150,16 +150,50 @@
 
   \begin{frame}
     \frametitle{Atomic variables}
-    \centering
 
-    \includegraphics[width=220pt]{../figures/nonatomic}
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=160pt]{../figures/nonatomic}
+      \end{column}
+      \hfill
+      \begin{column}{0.5\textwidth}
+        $x = 23$
+
+        \begin{enumerate}
+          \item $A$ reads $x$
+          \item $B$ reads $x$
+          \item $A$ increments value
+          \item $A$ writes incremented value to $x$
+          \item $B$ increments value
+          \item $B$ writes incremented value to $x$
+        \end{enumerate}
+
+        $x = 24$
+      \end{column}
+    \end{columns}
   \end{frame}
 
   \begin{frame}
     \frametitle{Atomic variables}
-    \centering
 
-    \includegraphics[width=220pt]{../figures/atomic}
+    \begin{columns}
+      \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=160pt]{../figures/atomic}
+      \end{column}
+      \hfill
+      \begin{column}{0.5\textwidth}
+        $x = 23$
+
+        \begin{enumerate}
+          \item $A$ calls \textsc{fetch-and-increment} on $x$
+          \item $B$ calls \textsc{fetch-and-increment} on $x$
+        \end{enumerate}
+
+        $x = 25$
+      \end{column}
+    \end{columns}
   \end{frame}
 
   \begin{frame}
@@ -205,7 +239,7 @@
 
     \includegraphics[width=220pt]{../figures/agent}
     \vfill
-    \textbf{The agent model:} An isolated thread handles all operations on an object.~\footcite{Swalens2014}
+    \textbf{Agents:} An isolated thread handles all operations on an object.~\footcite{Swalens2014}
   \end{frame}
 
   \begin{frame}
@@ -214,7 +248,7 @@
 
     \includegraphics[width=220pt]{../figures/csp}
     \vfill
-    \textbf{Communicating sequential processes:} Independent threads communicate synchronously through predefined channels.~\footcite{Hoare1978}
+    \textbf{Communicating sequential processes (CSP):} Independent threads communicate synchronously through predefined channels.~\footcite{Hoare1978}
   \end{frame}
 
   \begin{frame}
@@ -231,14 +265,14 @@
   \begin{frame}
     \frametitle{Composability criteria}
 
-    \textbf{How do we know that models are composable?}
+    \textbf{How do we know that models are composable?~\footcite{Swalens2014}}
 
     \begin{itemize}
       \item Safety: ``Nothing bad will happen!'' (The output of a program or algorithm will not be incorrect.)
       \item Liveness: ``Something will eventually happen!'' (The program or algorithm will terminate.)
     \end{itemize}
 
-    Two models are composable if using them within each other doesn't compromise safety or liveness.~\footcite{Swalens2014}
+    Two models are composable if using them within each other doesn't compromise safety or liveness.
   \end{frame}
 
   \begin{frame}
@@ -288,14 +322,14 @@
     \end{itemize}
   \end{frame}
 
-  \section{Proposed abstractions}
+  \section{Unifying abstractions}
 
   \subsection{Ownership-based meta-object protocol}
 
   \begin{frame}
     \frametitle{Proposed abstractions}
 
-    \textbf{What characteristics should a unified abstraction have?}~\footcite{Marr2012}
+    \textbf{What characteristics should a unifying abstraction have?}~\footcite{Marr2012}
 
     \begin{itemize}
       \onslide<1->{
@@ -303,7 +337,7 @@
       }
       \vfill
       \onslide<2->{
-        \item Managed mutation and execution: The owner of an object should determine how it be read and modified.
+        \item Managed mutation and execution: The owner of an object should determine how the object should be read and modified.
       }
       \vfill
       \onslide<3->{
@@ -311,7 +345,7 @@
       }
       \vfill
       \onslide<4->{
-        \item Enforceability: The model's semantics should be enforced regardless of where the model is used.
+        \item Enforceability: The abstraction should be able to enforce all model rules.
       }
     \end{itemize}
   \end{frame}
@@ -326,6 +360,20 @@
 
   \begin{frame}
     \frametitle{Conclusions}
+
+    \begin{itemize}
+      \onslide<1->{
+        \item An abstraction like the OBMOP must be implemented at a low level to achieve acceptable performance.
+      }
+      \vfill
+      \onslide<2->{
+        \item The OBMOP has some limitations: The owner is the only entity that enforces rules, and the abstraction doesn't guarantee things like freedom from deadlock.
+      }
+      \vfill
+      \onslide<3->{
+        \item This approach has potential: The authors were able to implement STM, CSP, agents, and actors in less than 500 total lines of code.
+      }
+    \end{itemize}
   \end{frame}
 
   \begin{frame}[standout]
