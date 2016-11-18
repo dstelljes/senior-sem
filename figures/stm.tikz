@@ -6,15 +6,12 @@
   \node at (-4,2.25) [align=center,draw,minimum height=40pt,minimum width=100pt] (A) {
     $Jill \leftarrow Jill - 200$\\$Joe \leftarrow Joe + 200$
   };
-  \node[above=3pt of A] { Thread $A$ };
 
   \node at (4,2.25) [align=center,draw,minimum height=40pt,minimum width=100pt] (B) {
     $Jill \leftarrow Jill + 50$
   };
-  \node[above=3pt of B] { Thread $B$ };
 
-  \node at (0,-1.75) (C) { Thread $C$ };
-  \node[align=center,below=3pt of C,draw,minimum height=40pt,minimum width=100pt] {
+  \node at (0,-2.5) [align=center,draw,minimum height=40pt,minimum width=100pt] (C) {
     $Jill \leftarrow Jill - 5$\\
     $Joe \leftarrow Joe - 5$
   };
