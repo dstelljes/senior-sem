@@ -1,0 +1,24 @@
+\begin{tikzpicture}
+  \node at (-2,3) (joe-lock) { $Joe$ is locked $= false$ };
+  \node at (2,3) (jill-lock) { $Jill$ is locked $= false$ };
+
+  \node at (-2,-3) (joe) { $Joe = 400$ };
+  \node at (2,-3) (jill) { $Jill = 800$ };
+
+  \draw (-3,0.5) rectangle (-1,-0.5) node [midway] (A) { Thread $A$ };
+  \draw (1,0.5) rectangle (3,-0.5) node [midway] (B) { Thread $B$ };
+
+  \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (A) -- (joe-lock);
+  \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (B) -- (joe-lock);
+
+  \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (A) -- (joe);
+  \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (B) -- (joe);
+
+  \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (A) -- (jill-lock);
+  \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (B) -- (jill-lock);
+
+  \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (A) -- (jill);
+  \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (B) -- (jill);
+
+  \draw [fill=lightgray] (0,1.6) ellipse (75pt and 20pt) node at (0, 1.6) { \textsc{compare-and-set} };
+\end{tikzpicture}
