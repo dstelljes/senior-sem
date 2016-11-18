@@ -6,6 +6,7 @@
 \usepackage[scale=2]{ccicons}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{multicol}
 \usepackage{tikz}
 
 % this actually isn't totally hideous:
@@ -25,11 +26,15 @@
 \begin{document}
   \maketitle
 
-  \section{Introduction}
-
   \begin{frame}
     \centering
     \resizebox{0.8\linewidth}{!}{\input{../figures/introduction.tikz}}
+  \end{frame}
+
+  \begin{frame}
+    \begin{multicols}{2}
+      \tableofcontents
+    \end{multicols}
   \end{frame}
 
   \section{Background}
@@ -144,6 +149,8 @@
     An ordering of operations is equivalent to some sequential ordering and that ordering corresponds to the order of execution in real time.
   \end{frame}
 
+  \addtocontents{toc}{\hfill}
+
   \section{Concurrency models}
 
   \subsection{Atomic variables}
@@ -210,17 +217,17 @@
     \includegraphics[width=220pt]{../figures/multiple-locks}
   \end{frame}
 
-  \subsection{Transactional memory}
+  \subsection{Software transactional memory}
 
   \begin{frame}
-    \frametitle{Transactional memory}
+    \frametitle{Software transactional memory}
     \centering
 
     \includegraphics[width=220pt]{../figures/stm}
   \end{frame}
 
   \begin{frame}
-    \frametitle{Transactional memory}
+    \frametitle{Software transactional memory}
 
     Software transactional memory (STM) is an optimistic approach to working with shared memory:~\footcite{Shavit1995}
 
@@ -260,10 +267,15 @@
     \textbf{The actor model:} Independent threads send messages to known addresses.~\footcite{Agha1986}
   \end{frame}
 
-  \section{Composability challenges}
+  % never change, LaTeX
+  \addtocontents{toc}{\newpage}
+
+  \section{Composability}
+
+  \subsection{Correctness criteria}
 
   \begin{frame}
-    \frametitle{Composability criteria}
+    \frametitle{Correctness criteria}
 
     \textbf{How do we know that models are composable?~\footcite{Swalens2014}}
 
@@ -281,6 +293,8 @@
 
     \includegraphics[width=360pt]{../figures/clojure-survey}
   \end{frame}
+
+  \subsection{Possible conflicts}
 
   \begin{frame}
     \frametitle{Possible conflicts}
@@ -304,6 +318,8 @@
     \end{itemize}
   \end{frame}
 
+  \subsection{Conclusions}
+
   \begin{frame}
     \frametitle{Conclusions}
 
@@ -318,60 +334,6 @@
       \vfill
       \onslide<3->{
         \item Future work would identify common ``building blocks'' (thread creation, message passing, etc.) that could be composed to express existing concurrency models and combinations of models.
-      }
-    \end{itemize}
-  \end{frame}
-
-  \section{Unifying abstractions}
-
-  \subsection{Ownership-based meta-object protocol}
-
-  \begin{frame}
-    \frametitle{Proposed abstractions}
-
-    \textbf{What characteristics should a unifying abstraction have?}~\footcite{Marr2012}
-
-    \begin{itemize}
-      \onslide<1->{
-        \item Ownership: All objects are owned by something, so ownership should be supported in a way that supports regulated access.
-      }
-      \vfill
-      \onslide<2->{
-        \item Managed mutation and execution: The owner of an object should determine how the object should be read and modified.
-      }
-      \vfill
-      \onslide<3->{
-        \item Leveled access: Threads should either have model-level access or abstraction-level access.
-      }
-      \vfill
-      \onslide<4->{
-        \item Enforceability: The abstraction should be able to enforce all model rules.
-      }
-    \end{itemize}
-  \end{frame}
-
-  \begin{frame}
-    \frametitle{Ownership-based meta-object protocol}
-
-    \centering
-
-    \includegraphics[width=250pt]{../figures/obmop-simple.png}
-  \end{frame}
-
-  \begin{frame}
-    \frametitle{Conclusions}
-
-    \begin{itemize}
-      \onslide<1->{
-        \item An abstraction like the OBMOP must be implemented at a low level to achieve acceptable performance.
-      }
-      \vfill
-      \onslide<2->{
-        \item The OBMOP has some limitations: The owner is the only entity that enforces rules, and the abstraction doesn't guarantee things like freedom from deadlock.
-      }
-      \vfill
-      \onslide<3->{
-        \item This approach has potential: The authors were able to implement STM, CSP, agents, and actors in less than 500 total lines of code.
       }
     \end{itemize}
   \end{frame}

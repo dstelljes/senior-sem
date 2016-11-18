@@ -5,7 +5,7 @@
     };
   }
 
-  \onslide<2>{
+  \onslide<2->{
     \path (-2.25,2.75) [draw=none, fill=darkgray, opacity=0.75] ellipse (60pt and 25pt);
     \node [text=white] at (-2.25,2.75) {
       Multiple tabs
@@ -29,12 +29,6 @@
     \draw (2.5,-1.5) [draw=none, fill=darkgray, opacity=0.75] ellipse (60pt and 25pt);
     \node [text=white] at (2.5,-1.5) {
       Background processes
-    };
-  }
-
-  \onslide<3>{
-    \node at (0,-0.62) {
-      \includegraphics[width=220pt]{../figures/goals}
     };
   }
 \end{tikzpicture}
