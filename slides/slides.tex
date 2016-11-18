@@ -11,6 +11,7 @@
 \usepackage{pifont}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
+\usetikzlibrary{snakes}
 
 % this actually isn't totally hideous:
 \usetheme[numbering=counter, progressbar=frametitle, sectionpage=none]{metropolis}
@@ -45,6 +46,22 @@
   \section{Background}
 
   \subsection{Concurrency}
+
+  \begin{frame}
+    \frametitle{Threads and processes}
+
+    \begin{figure}
+      \centering
+      \input{../figures/threads.tikz}
+    \end{figure}
+
+    \vfill
+
+    \begin{itemize}
+      \item \textbf{Threads} are independent sequences of operations.
+      \item \textbf{Processes} are instances of programs made up of one or more threads.
+    \end{itemize}
+  \end{frame}
 
   \begin{frame}
     \frametitle{Concurrency}
@@ -224,12 +241,6 @@
 
   \begin{frame}
     \frametitle{Software transactional memory}
-    \centering
-    \input{../figures/stm.tikz}
-  \end{frame}
-
-  \begin{frame}
-    \frametitle{Software transactional memory}
 
     Software transactional memory (STM) is an optimistic approach to working with shared memory:~\footcite{Shavit1995}
 
@@ -238,6 +249,12 @@
       \item If there are conflicting changes at the end of the transaction, the transaction is aborted and retried.
       \item If there are no conflicts, the changes are committed and become visible.
     \end{enumerate}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Software transactional memory}
+    \centering
+    \input{../figures/stm.tikz}
   \end{frame}
 
   \subsection{Communicating threads}
@@ -286,15 +303,16 @@
     Two models are composable if using them within each other doesn't compromise safety or liveness.
   \end{frame}
 
+  \subsection{Possible conflicts}
+
   \begin{frame}
-    \frametitle{Composability criteria}
+    \frametitle{Possible conflicts}
     \centering
     \small
 
     \newcommand{\n}{\textcolor{red}{\ding{55}}}
     \newcommand{\y}{\textcolor{olive}{\ding{51}}}
 
-    \textbf{Pairwise combinations of four Clojure concurrency models:}
     \vfill
     \begin{tabular}{c | c c c c | c c c c}
       & \multicolumn{4}{c|}{\textbf{Safety}} & \multicolumn{4}{|c}{\textbf{Liveness}} \\
@@ -305,48 +323,39 @@
       agents & \y & \y & \y & \y & \y & \y & \y & \n \\
       channels & \y & \y & \y & \y & \y & \y & \n & \n
     \end{tabular}
-  \end{frame}
-
-  \subsection{Possible conflicts}
-
-  \begin{frame}
-    \frametitle{Possible conflicts}
-
+    \vfill
     \begin{itemize}
-      \onslide<1->{
-        \item A model reexecutes code containing another model that performs an irrevocable action.
-      }
-      \vfill
       \onslide<2->{
+        \item A model reexecutes code that performs an irrevocable action.
+      }
+      \onslide<3->{
         \item A model reexecutes code that causes the reexecution to continually happen.
       }
-      \vfill
-      \onslide<3->{
-        \item A model that supports blocking operations is used within a model that does not support blocking operations.
-      }
-      \vfill
       \onslide<4->{
-        \item A model does not guarantee safety or liveness by design, making composability impossible.
+        \item A model that supports blocking operations is used within a model that doesn't.
+      }
+      \onslide<5->{
+        \item A model does not guarantee safety or liveness by design.
       }
     \end{itemize}
   \end{frame}
 
-  \subsection{Future work}
+  \subsection{Ongoing work}
 
   \begin{frame}
-    \frametitle{Future work}
+    \frametitle{Ongoing work}
 
     \begin{itemize}
       \onslide<1->{
-        \item Swalens et al.\ planned to identify composable ``building blocks'' (thread creation, message passing, etc.) that could be used to build common concurrency models.~\footcite{Swalens2014}
+        \item Composable ``building blocks'' (thread creation, message passing, etc.) that could be used to build common concurrency models~\footcite{Swalens2014}
       }
       \vfill
       \onslide<2->{
-        \item Marr and D'Hondt proposed a unifying abstraction for high-level language virtual machines.~\footcite{Marr2012}
+        \item Unifying abstractions for high-level language virtual machines~\footcite{Marr2012}
       }
       \vfill
       \onslide<3->{
-        \item Ziv et al.\ formalized a theory for safely composing concurrency control.~\footcite{Ziv2015}
+        \item Formal theories for safely composing concurrency control~\footcite{Ziv2015}
       }
     \end{itemize}
   \end{frame}
