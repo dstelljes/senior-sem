@@ -1,0 +1,39 @@
+\begin{tikzpicture}
+  \node at (-4,1.5) [align=center,draw,minimum height=40pt,minimum width=60pt] (dan) {
+    Dan\\
+    \scriptsize\textbf{stell124}
+  };
+
+  \node at (0,3) [align=center,draw,minimum height=40pt,minimum width=60pt] (henry) {
+    Henry\\
+    \scriptsize\textbf{fello056}
+  };
+
+  \node at (4,1.5) [align=center,draw,minimum height=40pt,minimum width=60pt] (mark) {
+    Mark\\
+    \scriptsize\textbf{lehet005}
+  };
+
+  \node at (-2,-1) [align=center,draw,minimum height=40pt,minimum width=60pt] (isaac) {
+    Isaac\\
+    \scriptsize\textbf{koakx001}
+  };
+
+  \node at (2,-1) [align=center,draw,minimum height=40pt,minimum width=60pt] (ryan) {
+    Ryan\\
+    \scriptsize\textbf{mcart046}
+  };
+
+  \path[->,line width=1pt, shorten <=6pt, shorten >=6pt] ([xshift=3pt]dan.east) edge[in=60,out=-30] ([xshift=-3pt]isaac.north);
+  \path[->,line width=1pt, shorten <=6pt, shorten >=6pt] ([xshift=-3pt]isaac.west) edge[in=240,out=150] ([yshift=-3pt]dan.south);
+
+  \path[->,line width=1pt, shorten <=6pt, shorten >=6pt] ([xshift=12pt]isaac.north) edge[in=270,out=30] ([xshift=3pt]henry.south);
+  \path[->,line width=1pt, shorten <=6pt, shorten >=6pt] ([xshift=-3pt]henry.south) edge[in=90,out=210] ([xshift=9pt]isaac.north);
+
+  \path[->,line width=1pt, shorten <=6pt, shorten >=6pt] ([yshift=-3pt]isaac.east) edge[in=210,out=-30] ([yshift=-3pt]ryan.west);
+
+  \path[->,line width=1pt, shorten <=6pt, shorten >=6pt] ([xshift=-3pt]mark.west) edge[in=120,out=210] ([xshift=3pt]ryan.north);
+  \path[->,line width=1pt, shorten <=6pt, shorten >=6pt] ([xshift=3pt]ryan.east) edge[in=300,out=30] ([yshift=-3pt]mark.south);
+
+  \path[->,line width=1pt, shorten <=6pt, shorten >=6pt] ([yshift=3pt]mark.north) edge[in=0,out=150] (henry.east);
+\end{tikzpicture}

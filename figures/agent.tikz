@@ -1,0 +1,19 @@
+\begin{tikzpicture}
+  \node at (-5,0) [align=center,draw,minimum height=30pt,minimum width=60pt] (A) {
+    Thread $A$
+  };
+
+  \node at (0,0) [align=center,draw,fill=lightgray,minimum height=30pt,minimum width=60pt] (x) {
+    Agent $x$
+  };
+
+  \node at (5,0) [align=center,draw,minimum height=30pt,minimum width=60pt] (B) {
+    Thread $B$
+  };
+
+  \path[<-,line width=1pt, shorten <=6pt, shorten >=6pt] ([yshift=3pt]A.east) edge[in=150,out=30] ([yshift=3pt]x.west);
+  \path[->,line width=1pt, shorten <=6pt, shorten >=6pt] ([yshift=-3pt]A.east) edge[in=-150,out=-30] ([yshift=-3pt]x.west);
+
+  \path[<-,line width=1pt, shorten <=6pt, shorten >=6pt] ([yshift=3pt]B.west) edge[in=30,out=150] ([yshift=3pt]x.east);
+  \path[->,line width=1pt, shorten <=6pt, shorten >=6pt] ([yshift=-3pt]B.west) edge[in=-30,out=-150] ([yshift=-3pt]x.east);
+\end{tikzpicture}

@@ -4,10 +4,13 @@
 \usepackage[USenglish]{babel}
 \usepackage[backend=bibtex,citestyle=authortitle]{biblatex}
 \usepackage[scale=2]{ccicons}
+\usepackage{color}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{multicol}
+\usepackage{pifont}
 \usepackage{tikz}
+\usetikzlibrary{positioning}
 
 % this actually isn't totally hideous:
 \usetheme[numbering=counter, progressbar=frametitle, sectionpage=none]{metropolis}
@@ -25,6 +28,8 @@
 
 \begin{document}
   \maketitle
+
+  \section*{Introduction}
 
   \begin{frame}
     \centering
@@ -220,8 +225,7 @@
   \begin{frame}
     \frametitle{Software transactional memory}
     \centering
-
-    \includegraphics[width=220pt]{../figures/stm}
+    \input{../figures/stm.tikz}
   \end{frame}
 
   \begin{frame}
@@ -241,17 +245,15 @@
   \begin{frame}
     \frametitle{Communicating threads}
     \centering
-
-    \includegraphics[width=220pt]{../figures/agent}
+    \input{../figures/agent.tikz}
     \vfill
-    \textbf{Agents:} An isolated thread handles all operations on an object.~\footcite{Swalens2014}
+    \textbf{Agents:} An isolated thread wraps an object.~\footcite{Swalens2014}
   \end{frame}
 
   \begin{frame}
     \frametitle{Communicating threads}
     \centering
-
-    \includegraphics[width=220pt]{../figures/csp}
+    \input{../figures/csp.tikz}
     \vfill
     \textbf{Communicating sequential processes (CSP):} Independent threads communicate synchronously through predefined channels.~\footcite{Hoare1978}
   \end{frame}
@@ -259,8 +261,7 @@
   \begin{frame}
     \frametitle{Communicating threads}
     \centering
-
-    \includegraphics[width=220pt]{../figures/actor}
+    \input{../figures/actor.tikz}
     \vfill
     \textbf{The actor model:} Independent threads send messages to known addresses.~\footcite{Agha1986}
   \end{frame}
@@ -288,8 +289,22 @@
   \begin{frame}
     \frametitle{Composability criteria}
     \centering
+    \small
 
-    \includegraphics[width=360pt]{../figures/clojure-survey}
+    \newcommand{\n}{\textcolor{red}{\ding{55}}}
+    \newcommand{\y}{\textcolor{olive}{\ding{51}}}
+
+    \textbf{Pairwise combinations of four Clojure concurrency models:}
+    \vfill
+    \begin{tabular}{c | c c c c | c c c c}
+      & \multicolumn{4}{c|}{\textbf{Safety}} & \multicolumn{4}{|c}{\textbf{Liveness}} \\
+      & atoms & refs & agents & channels & atoms & refs & agents & channels \\
+      \hline
+      atoms & \n & \n & \n & \n & \y & \y & \y & \n \\
+      refs & \n & \y & \y & \n & \y & \y & \y & \n \\
+      agents & \y & \y & \y & \y & \y & \y & \y & \n \\
+      channels & \y & \y & \y & \y & \y & \y & \n & \n
+    \end{tabular}
   \end{frame}
 
   \subsection{Possible conflicts}
@@ -316,22 +331,22 @@
     \end{itemize}
   \end{frame}
 
-  \subsection{Conclusions}
+  \subsection{Future work}
 
   \begin{frame}
-    \frametitle{Conclusions}
+    \frametitle{Future work}
 
     \begin{itemize}
       \onslide<1->{
-        \item The language may ensure that some bad interactions don't happen.
+        \item Swalens et al.\ planned to identify composable ``building blocks'' (thread creation, message passing, etc.) that could be used to build common concurrency models.~\footcite{Swalens2014}
       }
       \vfill
       \onslide<2->{
-        \item Sometimes, it's best to just use a different concurrency model.
+        \item Marr and D'Hondt proposed a unifying abstraction for high-level language virtual machines.~\footcite{Marr2012}
       }
       \vfill
       \onslide<3->{
-        \item Future work would identify common ``building blocks'' (thread creation, message passing, etc.) that could be composed to express existing concurrency models and combinations of models.
+        \item Ziv et al.\ formalized a theory for safely composing concurrency control.~\footcite{Ziv2015}
       }
     \end{itemize}
   \end{frame}

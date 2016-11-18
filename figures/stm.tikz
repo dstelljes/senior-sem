@@ -1,0 +1,25 @@
+\begin{tikzpicture}
+  \draw (0,0) ellipse (60pt and 30pt) node [align=center,midway] (accounts) {
+    $Jill = 800$\\$Joe = 400$
+  };
+
+  \node at (-4,2.25) [align=center,draw,minimum height=40pt,minimum width=100pt] (A) {
+    $Jill \leftarrow Jill - 200$\\$Joe \leftarrow Joe + 200$
+  };
+  \node[above=3pt of A] { Thread $A$ };
+
+  \node at (4,2.25) [align=center,draw,minimum height=40pt,minimum width=100pt] (B) {
+    $Jill \leftarrow Jill + 50$
+  };
+  \node[above=3pt of B] { Thread $B$ };
+
+  \node at (0,-1.75) (C) { Thread $C$ };
+  \node[align=center,below=3pt of C,draw,minimum height=40pt,minimum width=100pt] {
+    $Jill \leftarrow Jill - 5$\\
+    $Joe \leftarrow Joe - 5$
+  };
+
+  \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (A) -- (accounts);
+  \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (B) -- (accounts);
+  \draw[->, line width=1pt, shorten >=6pt] (C) -- (accounts);
+\end{tikzpicture}
