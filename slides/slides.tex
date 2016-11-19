@@ -5,6 +5,8 @@
 \usepackage[backend=bibtex,citestyle=authortitle]{biblatex}
 \usepackage[scale=2]{ccicons}
 \usepackage{color}
+\usepackage{colortbl}
+\usepackage{diagbox}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{multicol}
@@ -88,8 +90,6 @@
       \item $A$ and $B$ are operations in the same thread and $A$ occurs before $B$.
       \item $A$ is the sending of a message by one thread and $B$ is the receipt of the same message by another thread.
     \end{enumerate}
-
-    If $A \rightarrow B$ and $B \rightarrow C$, then $A \rightarrow C$.
 
     $A$ and $B$ are said to be concurrent if $A \nrightarrow B$ and $B \nrightarrow A$.
   \end{frame}
@@ -321,7 +321,6 @@
 
   \begin{frame}
     \frametitle{Possible conflicts}
-    \centering
     \small
 
     \newcommand{\n}{\textcolor{red}{\ding{55}}}
@@ -329,13 +328,13 @@
 
     \vfill
     \begin{tabular}{c | c c c c | c c c c}
-      & \multicolumn{4}{c|}{\textbf{Safety}} & \multicolumn{4}{|c}{\textbf{Liveness}} \\
-      & atoms & refs & agents & channels & atoms & refs & agents & channels \\
+      & \multicolumn{4}{c|}{\textbf{Safety}} & \multicolumn{4}{|c}{\textbf{Liveness}} \tabularnewline
+      \diagbox[dir=NW,width=7em]{within}{using} & atoms & refs & agents & channels & atoms & refs & agents & channels \tabularnewline
       \hline
-      atoms & \n & \n & \n & \n & \y & \y & \y & \n \\
-      refs & \n & \y & \y & \n & \y & \y & \y & \n \\
-      agents & \y & \y & \y & \y & \y & \y & \y & \n \\
-      channels & \y & \y & \y & \y & \y & \y & \n & \n
+      atoms & \n & \n & \n & \n & \y & \y & \y & \n \tabularnewline
+      refs & \n & \y & \y & \n & \y & \y & \y & \n \tabularnewline
+      agents & \y & \y & \y & \y & \y & \y & \y & \n \tabularnewline
+      channels & \y & \y & \y & \y & \y & \y & \n & \n \tabularnewline
     \end{tabular}
     \vfill
     \begin{itemize}

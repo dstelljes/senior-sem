@@ -20,5 +20,5 @@
   \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (A) -- (jill);
   \draw[->, line width=1pt, shorten <=18pt, shorten >=6pt] (B) -- (jill);
 
-  \draw [fill=lightgray] (0,1.6) ellipse (75pt and 20pt) node at (0, 1.6) { \textsc{compare-and-set} };
+  \draw [fill=lightgray] (0,1.6) ellipse (75pt and 20pt) node at (0, 1.6) { \textsc{compare-and-swap} };
 \end{tikzpicture}
