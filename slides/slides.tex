@@ -13,10 +13,24 @@
 \usetikzlibrary{positioning}
 \usetikzlibrary{snakes}
 
+\defbeamertemplate{section in toc}{numbered titles}{%
+  \leavevmode
+  \parbox[t]{1.5em}{\inserttocsectionnumber.}%
+  \parbox[t]{\dimexpr\textwidth-1em\relax}{\inserttocsection}\par
+}
+
+\defbeamertemplate{subsection in toc}{indented titles}{%
+  \leavevmode
+  \parbox[t]{3em}{\hfill}%
+  \parbox[t]{\dimexpr\textwidth-1em\relax}{\inserttocsubsection}\par
+}
+
 % this actually isn't totally hideous:
 \usetheme[numbering=counter, progressbar=frametitle, sectionpage=none]{metropolis}
 \setbeamertemplate{bibliography item}[text]
 \setbeamertemplate{frametitle continuation}{}
+\setbeamertemplate{section in toc}[numbered titles]
+\setbeamertemplate{subsection in toc}[indented titles]
 
 \title{Composable Concurrency Models}
 \date{November 19, 2016}
