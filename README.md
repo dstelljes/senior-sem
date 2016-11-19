@@ -11,6 +11,7 @@
 | 2016-10-13 | [Four-page draft][four-page-draft]       | [source][four-page-draft-source], [PDF][four-page-draft-final] |
 | 2016-10-20 | [Talk outline and slide][slide-draft]    | [PDF][slide-draft-final]                                       |
 | 2016-10-27 | [Complete draft][complete-draft]         | [source][complete-draft-source], [PDF][complete-draft-final]   |
+| 2016-11-19 | [Slide deck][slide-deck]                 | [source][slide-deck-source], [PDF][slide-deck-final]           |
 
 [analysis]: https://github.com/dstelljes/senior-sem/tree/master/previous-paper-analysis
 [analysis-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSSUs5dXY4WmUzdVk/view?usp=sharing
@@ -31,5 +32,8 @@
 [section-draft]: https://github.com/dstelljes/senior-sem/tree/master/paper
 [section-draft-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSekpSZGMyVzBUUzg/view?usp=sharing
 [section-draft-source]: https://github.com/dstelljes/senior-sem/blob/20a8a565899b2d12ed9f8fdb085615cc0867fb2b/paper/paper.tex
+[slide-deck]: https://github.com/dstelljes/senior-sem/tree/master/slides
+[slide-deck-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSeURsRG85VEQyVjQ/view?usp=sharing
+[slide-deck-source]: https://github.com/dstelljes/senior-sem/blob/361e9e7ac8198e4f800370d1b4907ee74e96f5a4/slides/slides.tex
 [slide-draft]: https://github.com/dstelljes/senior-sem/tree/master/slides
 [slide-draft-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSSl9MWG5PV1htT2s/view?usp=sharing
