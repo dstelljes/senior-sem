@@ -1,0 +1,27 @@
+\begin{tikzpicture}
+  \node at (0,0) [align=center,draw] (domain) {
+    \textbf{Domain}\\
+    \code{read\_field(object, index)}\\
+    \code{write\_field(object, index, value)}\\
+    \code{execute(object, method, arguments)}\\
+    \code{new\_thread(method)}\\
+    \code{execute\_in\_context(method)}\\
+    \code{read\_global(global)}\\
+    \code{write\_global(global, value)}\\
+    \code{primitive\_copy(object)}\\
+    \code{primitive*(...)}
+  };
+
+  \node [align=center,draw,above=30pt of domain,minimum height=3.2em,minimum width=80pt] (object) {
+    \textbf{Object}\\
+    ...
+  };
+
+  \node [align=center,draw,below=30pt of domain,minimum height=3.2em,minimum width=80pt] (thread) {
+    \textbf{Thread}\\
+    \code{execution\_level: base | meta}
+  };
+
+  \draw[->] (object.south) -- node[right=3pt] {owned by} (domain.north);
+  \draw[->] (thread.north) -- node[right=3pt] {executes in} (domain.south);
+\end{tikzpicture}
