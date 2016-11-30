@@ -1,4 +1,6 @@
 \begin{tikzpicture}
+  \node at (-4.5,0.75) { Thread $A$: };
+  \node at (-4.5,-0.75) { Thread $B$: };
   \node at (-3.333,0) { $x$ };
 
   \draw (-3,-0.333) rectangle (-1,0.333) node [midway] { \small $1$ };

@@ -1,10 +1,11 @@
 \begin{tikzpicture}
+  \node at (-6.5,0.75) { Thread $A$: };
+  \node at (-6.5,-0.75) { Thread $B$: };
   \node at (-5.333,0) { $x$ };
 
   \draw (-5,-0.333) rectangle (-2.5,0.333) node [midway] { \small $1$ };
   \draw (-2.5,-0.333) rectangle (0,0.333) node [midway] { \small $2$ };
   \draw (0,-0.333) rectangle (1.667,0.333) node [midway] { \small $3$ };
-  \draw (1.667,-0.333) rectangle (5,0.333) node [midway] { \small $4$ };
 
   \draw (-5,-0.5) -- (-5,-1) node [below=3pt] { \small $x \leftarrow 1$ };
   \draw (-4.375,0.5) -- (-4.375,1) node [above=3pt] { \small $x = 1$ };
@@ -16,8 +17,4 @@
 
   \draw (0,-0.5) -- (0,-1) node [below=3pt] { \small $x \leftarrow 3$ };
   \draw (0.625,0.5) -- (0.625,1) node [above=3pt] { \small $x = 3$ };
-
-  \draw (1.667,0.5) -- (1.667,1) node [above=3pt] { \small $x \leftarrow 4$ };
-  \draw (2.778,-0.5) -- (2.778,-1) node [below=3pt] { \small $x = 4$ };
-  \draw (3.889,0.5) -- (3.889,1) node [above=3pt] { \small $x = 4$ };
 \end{tikzpicture}
