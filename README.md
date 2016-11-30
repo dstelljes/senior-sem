@@ -23,7 +23,7 @@
 [complete-draft]: https://github.com/dstelljes/senior-sem/tree/master/paper
 [complete-draft-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSYzlRWjd6X0FQNmM/view?usp=sharing
 [complete-draft-source]: https://github.com/dstelljes/senior-sem/blob/e804e02f1252347e5c1ba634e4222e8545b2ced2/paper/paper.tex
-[cookies]: https://img.shields.io/badge/cookies-3-orange.svg
+[cookies]: https://img.shields.io/badge/cookies-4-orange.svg
 [final-draft]: https://github.com/dstelljes/senior-sem/tree/master/paper
 [final-draft-final]: https://drive.google.com/file/d/0B2xeEw_wfrSScWtvcWFXa2twNXM/view?usp=sharing
 [final-draft-source]: https://github.com/dstelljes/senior-sem/blob/c6ff8ec920729781735320bee9dd71636f6be104/paper/paper.tex
