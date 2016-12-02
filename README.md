@@ -13,6 +13,7 @@
 | 2016-10-27 | [Complete draft][complete-draft]         | [source][complete-draft-source], [PDF][complete-draft-final]   |
 | 2016-11-19 | [Slide deck][slide-deck]                 | [source][slide-deck-source], [PDF][slide-deck-final]           |
 | 2016-11-19 | [Nearly final draft][final-draft]        | [source][final-draft-source], [PDF][final-draft-final]         |
+| 2016-12-02 | [Camera ready paper][camera-ready]       | [source][camera-ready-source], [PDF][camera-ready-final]       |
 
 [analysis]: https://github.com/dstelljes/senior-sem/tree/master/previous-paper-analysis
 [analysis-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSSUs5dXY4WmUzdVk/view?usp=sharing
@@ -20,6 +21,9 @@
 [bibliography]: https://github.com/dstelljes/senior-sem/tree/master/annotated-bibliography
 [bibliography-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSNWdOczUtblA0NjA/view?usp=sharing
 [bibliography-source]: https://github.com/dstelljes/senior-sem/blob/b7071ba01fb5aaa02b2fd799ace8ee3274d59363/annotated-bibliography/annotated-bibliography.tex
+[camera-ready]: https://github.com/dstelljes/senior-sem/tree/master/paper
+[camera-ready-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSWFhDSy0xMlM2dHM/view?usp=sharing
+[camera-ready-source]: https://github.com/dstelljes/senior-sem/tree/871b81b4711642094133de768e444493fb93341b/paper
 [complete-draft]: https://github.com/dstelljes/senior-sem/tree/master/paper
 [complete-draft-final]: https://drive.google.com/file/d/0B2xeEw_wfrSSYzlRWjd6X0FQNmM/view?usp=sharing
 [complete-draft-source]: https://github.com/dstelljes/senior-sem/blob/e804e02f1252347e5c1ba634e4222e8545b2ced2/paper/paper.tex
